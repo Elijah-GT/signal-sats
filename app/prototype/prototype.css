@@ -1,0 +1,110 @@
+/* The game is deliberately dark only: space background in every theme. */
+:root {
+  color-scheme: dark;
+}
+html,
+body {
+  margin: 0;
+  background: #070b1a;
+  color: #e8edff;
+  font:
+    15px/1.45 system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+}
+.pt-bar {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 12px 16px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.pt-bar label {
+  font-size: 13px;
+  color: #93a0cf;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.pt-bar select,
+.pt-bar button {
+  font: inherit;
+  font-size: 14px;
+  color: #e8edff;
+  background: #16204a;
+  border: 1px solid #253163;
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.pt-bar button {
+  cursor: pointer;
+}
+.pt-note {
+  max-width: 460px;
+  margin: 8px auto 0;
+  padding: 0 16px;
+  color: #93a0cf;
+  font-size: 13px;
+}
+.pt-reveal {
+  color: #ffb23e;
+}
+.pt-log {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 0 16px 32px;
+}
+.pt-log h2 {
+  font-size: 13px;
+  color: #93a0cf;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+.pt-log table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.pt-log th,
+.pt-log td {
+  text-align: left;
+  padding: 4px 6px;
+  border-bottom: 1px solid #253163;
+}
+.pt-log .pt-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.pt-log button {
+  font: inherit;
+  font-size: 13px;
+  color: #e8edff;
+  background: transparent;
+  border: 1px solid #253163;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.pt-note--flush {
+  margin: 10px 0 6px;
+  padding: 0;
+}
+.pt-results {
+  width: 100%;
+  min-height: 120px;
+  font:
+    12px ui-monospace,
+    Menlo,
+    Consolas,
+    monospace;
+  color: #e8edff;
+  background: #0f1630;
+  border: 1px solid #253163;
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+}

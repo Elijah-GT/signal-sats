@@ -1,0 +1,110 @@
+{
+  "date": "2026-11-20",
+  "week": "sample",
+  "band": "fri",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 2
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 2,
+        "y": 4,
+        "op": {
+          "kind": "shift",
+          "amount": 2
+        }
+      },
+      {
+        "id": "B",
+        "x": 4,
+        "y": 1,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "C",
+        "x": 2,
+        "y": 1,
+        "op": {
+          "kind": "shift",
+          "amount": 2
+        }
+      },
+      {
+        "id": "D",
+        "x": 1,
+        "y": 0,
+        "op": {
+          "kind": "shift",
+          "amount": 3
+        }
+      },
+      {
+        "id": "E",
+        "x": 4,
+        "y": 4,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "F",
+        "x": 1,
+        "y": 1,
+        "op": {
+          "kind": "rotate"
+        }
+      }
+    ],
+    "debris": [
+      {
+        "x": 0,
+        "y": 4
+      },
+      {
+        "x": 0,
+        "y": 3
+      }
+    ]
+  },
+  "ciphertext": "DPHEC",
+  "start": {
+    "A": "\\",
+    "B": "/",
+    "C": "\\",
+    "D": "\\",
+    "E": "\\",
+    "F": "/"
+  },
+  "answer": "LIGHT",
+  "solution": {
+    "A": "/",
+    "B": "\\",
+    "C": "\\",
+    "D": "/",
+    "E": "/",
+    "F": "/"
+  },
+  "stats": {
+    "satellites": 6,
+    "pathLength": 4,
+    "reachingSettings": 22,
+    "routes": 3,
+    "minTaps": 3,
+    "opKinds": [
+      "shift",
+      "rotate"
+    ]
+  }
+}

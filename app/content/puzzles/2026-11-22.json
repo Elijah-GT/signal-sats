@@ -1,0 +1,119 @@
+{
+  "date": "2026-11-22",
+  "week": "sample",
+  "band": "sun",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 3
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 1,
+        "y": 5,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "B",
+        "x": 3,
+        "y": 0,
+        "op": {
+          "kind": "swap"
+        }
+      },
+      {
+        "id": "C",
+        "x": 1,
+        "y": 3,
+        "op": {
+          "kind": "shift",
+          "amount": 3
+        }
+      },
+      {
+        "id": "D",
+        "x": 2,
+        "y": 1,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "E",
+        "x": 4,
+        "y": 0,
+        "op": {
+          "kind": "mirror"
+        }
+      },
+      {
+        "id": "F",
+        "x": 2,
+        "y": 0,
+        "op": {
+          "kind": "mirror"
+        }
+      },
+      {
+        "id": "G",
+        "x": 4,
+        "y": 1,
+        "op": {
+          "kind": "swap"
+        }
+      }
+    ],
+    "debris": [
+      {
+        "x": 0,
+        "y": 2
+      },
+      {
+        "x": 0,
+        "y": 3
+      }
+    ]
+  },
+  "ciphertext": "SGIZV",
+  "start": {
+    "A": "/",
+    "B": "/",
+    "C": "\\",
+    "D": "\\",
+    "E": "/",
+    "F": "\\",
+    "G": "\\"
+  },
+  "answer": "EARTH",
+  "solution": {
+    "A": "/",
+    "B": "\\",
+    "C": "\\",
+    "D": "/",
+    "E": "\\",
+    "F": "\\",
+    "G": "/"
+  },
+  "stats": {
+    "satellites": 7,
+    "pathLength": 4,
+    "reachingSettings": 24,
+    "routes": 4,
+    "minTaps": 4,
+    "opKinds": [
+      "swap",
+      "mirror",
+      "reverse"
+    ]
+  }
+}

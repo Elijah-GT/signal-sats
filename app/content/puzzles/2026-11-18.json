@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-18",
+  "week": "sample",
+  "band": "wed",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 1
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 0,
+        "y": 2,
+        "op": {
+          "kind": "swap"
+        }
+      },
+      {
+        "id": "B",
+        "x": 1,
+        "y": 0,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "C",
+        "x": 3,
+        "y": 0,
+        "op": {
+          "kind": "swap"
+        }
+      },
+      {
+        "id": "D",
+        "x": 1,
+        "y": 2,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "E",
+        "x": 0,
+        "y": 0,
+        "op": {
+          "kind": "rotate"
+        }
+      }
+    ],
+    "debris": []
+  },
+  "ciphertext": "ODIRA",
+  "start": {
+    "A": "\\",
+    "B": "/",
+    "C": "/",
+    "D": "/",
+    "E": "/"
+  },
+  "answer": "RADIO",
+  "solution": {
+    "A": "/",
+    "B": "\\",
+    "C": "\\",
+    "D": "/",
+    "E": "\\"
+  },
+  "stats": {
+    "satellites": 5,
+    "pathLength": 2,
+    "reachingSettings": 11,
+    "routes": 3,
+    "minTaps": 2,
+    "opKinds": [
+      "reverse",
+      "swap"
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-17",
+  "week": "sample",
+  "band": "tue",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 1
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 3,
+        "y": 4,
+        "op": {
+          "kind": "swap"
+        }
+      },
+      {
+        "id": "B",
+        "x": 0,
+        "y": 0,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "C",
+        "x": 4,
+        "y": 0,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "D",
+        "x": 1,
+        "y": 0,
+        "op": {
+          "kind": "rotate"
+        }
+      }
+    ],
+    "debris": []
+  },
+  "ciphertext": "AEKAW",
+  "start": {
+    "A": "\\",
+    "B": "\\",
+    "C": "/",
+    "D": "/"
+  },
+  "answer": "AWAKE",
+  "solution": {
+    "A": "/",
+    "B": "/",
+    "C": "\\",
+    "D": "\\"
+  },
+  "stats": {
+    "satellites": 4,
+    "pathLength": 2,
+    "reachingSettings": 8,
+    "routes": 2,
+    "minTaps": 2,
+    "opKinds": [
+      "rotate",
+      "reverse"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../dist/types/prototype",
+    "tsBuildInfoFile": "../dist/types/prototype/tsconfig.tsbuildinfo",
+    "types": ["vite/client"],
+    "rootDir": "../prototype"
+  },
+  "include": ["../prototype/**/*.ts", "../prototype/**/*.tsx"],
+  "exclude": [],
+  "references": [
+    { "path": "./tsconfig.client.json" },
+    { "path": "./tsconfig.shared.json" }
+  ]
+}

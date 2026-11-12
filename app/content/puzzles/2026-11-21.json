@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-21",
+  "week": "sample",
+  "band": "sat",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 3
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 4,
+        "y": 0,
+        "op": {
+          "kind": "mirror"
+        }
+      },
+      {
+        "id": "B",
+        "x": 4,
+        "y": 2,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "C",
+        "x": 1,
+        "y": 0,
+        "op": {
+          "kind": "mirror"
+        }
+      },
+      {
+        "id": "D",
+        "x": 0,
+        "y": 2,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "E",
+        "x": 1,
+        "y": 2,
+        "op": {
+          "kind": "mirror"
+        }
+      },
+      {
+        "id": "F",
+        "x": 4,
+        "y": 5,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "G",
+        "x": 3,
+        "y": 0,
+        "op": {
+          "kind": "shift",
+          "amount": 3
+        }
+      }
+    ],
+    "debris": [
+      {
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "ciphertext": "BSLFZ",
+  "start": {
+    "A": "/",
+    "B": "\\",
+    "C": "/",
+    "D": "\\",
+    "E": "\\",
+    "F": "/",
+    "G": "\\"
+  },
+  "answer": "VOICE",
+  "solution": {
+    "A": "\\",
+    "B": "/",
+    "C": "\\",
+    "D": "/",
+    "E": "/",
+    "F": "/",
+    "G": "\\"
+  },
+  "stats": {
+    "satellites": 7,
+    "pathLength": 4,
+    "reachingSettings": 24,
+    "routes": 4,
+    "minTaps": 3,
+    "opKinds": [
+      "shift",
+      "mirror",
+      "rotate"
+    ]
+  }
+}

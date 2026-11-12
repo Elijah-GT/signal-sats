@@ -1,0 +1,106 @@
+{
+  "date": "2026-11-19",
+  "week": "sample",
+  "band": "thu",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 3
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 2,
+        "y": 4,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "B",
+        "x": 3,
+        "y": 0,
+        "op": {
+          "kind": "shift",
+          "amount": 1
+        }
+      },
+      {
+        "id": "C",
+        "x": 4,
+        "y": 0,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "D",
+        "x": 2,
+        "y": 0,
+        "op": {
+          "kind": "shift",
+          "amount": 1
+        }
+      },
+      {
+        "id": "E",
+        "x": 3,
+        "y": 4,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "F",
+        "x": 2,
+        "y": 5,
+        "op": {
+          "kind": "rotate"
+        }
+      }
+    ],
+    "debris": [
+      {
+        "x": 1,
+        "y": 2
+      }
+    ]
+  },
+  "ciphertext": "GZPMR",
+  "start": {
+    "A": "/",
+    "B": "\\",
+    "C": "/",
+    "D": "\\",
+    "E": "\\",
+    "F": "\\"
+  },
+  "answer": "ORBIT",
+  "solution": {
+    "A": "\\",
+    "B": "/",
+    "C": "/",
+    "D": "/",
+    "E": "\\",
+    "F": "\\"
+  },
+  "stats": {
+    "satellites": 6,
+    "pathLength": 4,
+    "reachingSettings": 22,
+    "routes": 3,
+    "minTaps": 3,
+    "opKinds": [
+      "shift",
+      "reverse",
+      "rotate"
+    ]
+  }
+}

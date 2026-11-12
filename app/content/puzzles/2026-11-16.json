@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-16",
+  "week": "sample",
+  "band": "mon",
+  "board": {
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 3
+    },
+    "receiver": {
+      "side": "bottom",
+      "from": 0,
+      "to": 4
+    },
+    "satellites": [
+      {
+        "id": "A",
+        "x": 3,
+        "y": 0,
+        "op": {
+          "kind": "reverse"
+        }
+      },
+      {
+        "id": "B",
+        "x": 4,
+        "y": 0,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "C",
+        "x": 1,
+        "y": 0,
+        "op": {
+          "kind": "rotate"
+        }
+      }
+    ],
+    "debris": []
+  },
+  "ciphertext": "BORPE",
+  "start": {
+    "A": "\\",
+    "B": "/",
+    "C": "\\"
+  },
+  "answer": "PROBE",
+  "solution": {
+    "A": "\\",
+    "B": "\\",
+    "C": "\\"
+  },
+  "stats": {
+    "satellites": 3,
+    "pathLength": 2,
+    "reachingSettings": 4,
+    "routes": 2,
+    "minTaps": 1,
+    "opKinds": [
+      "reverse",
+      "rotate"
+    ]
+  }
+}
