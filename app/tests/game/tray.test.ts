@@ -147,9 +147,9 @@ describe('solveTray', () => {
     assert.deepEqual(solveTray(withFixed).orders, []);
   });
 
-  test('the shipped tray puzzles each have exactly one satellite order', () => {
+  test('the hand-made hard puzzles each have exactly one satellite order', () => {
     const shipped: TrayPuzzle[] = JSON.parse(
-      readFileSync('content/tray/puzzles.json', 'utf8')
+      readFileSync('content/tray/puzzles-hard.json', 'utf8')
     );
     assert.equal(shipped.length, 3);
     for (const p of shipped) {

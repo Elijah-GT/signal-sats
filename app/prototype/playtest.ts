@@ -4,7 +4,7 @@ import type { PlayMode } from '../src/client/game/PuzzleView';
 export type LogEntry = {
   date: string;
   band: string;
-  mode: PlayMode | 'tray';
+  mode: PlayMode | 'tray' | 'practice';
   solved: boolean;
   /** Which transmission solved it, or null. */
   solvedOn: number | null;

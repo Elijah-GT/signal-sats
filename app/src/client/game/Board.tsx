@@ -56,6 +56,8 @@ type BoardProps = {
   draggingId?: string | null;
   /** The square a dragged satellite would land on. */
   dropTarget?: Point | null;
+  /** In the level editor even bolted satellites can be turned. */
+  editing?: boolean;
 };
 
 // A fixed scatter of stars, so the sky doesn't shift between renders.
@@ -443,6 +445,7 @@ export const Board = ({
   onSatPointerDown,
   draggingId,
   dropTarget,
+  editing = false,
 }: BoardProps) => {
   const ditherId = useId();
   const { width, height } = boardSize(board);
@@ -617,7 +620,7 @@ export const Board = ({
           satellite={s}
           angle={settings[s.id] ?? '/'}
           lit={lit.has(s.id)}
-          locked={locked || (fixedIds?.has(s.id) ?? false)}
+          locked={locked || (!editing && (fixedIds?.has(s.id) ?? false))}
           fixed={fixedIds?.has(s.id) ?? false}
           onTap={onTap}
           onPointerDown={onSatPointerDown}

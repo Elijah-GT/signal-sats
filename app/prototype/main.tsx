@@ -4,6 +4,7 @@ import {
   StrictMode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -14,6 +15,8 @@ import { TrayView } from '../src/client/game/TrayView';
 import { solvedOn, type GameState } from '../src/shared/game';
 import { toClientPuzzle, type Puzzle } from '../src/shared/puzzle';
 import type { TrayPuzzle, TrayState } from '../src/shared/tray';
+import { generateTray, PRACTICE, type Difficulty } from '../src/shared/trayGen';
+import { EditorApp } from './EditorApp';
 import { formatLog, loadLog, saveLog, type LogEntry } from './playtest';
 
 // Every puzzle, bundled in. Fine for a prototype; the real game keeps answers
@@ -48,6 +51,15 @@ const TRAY_PUZZLES = Object.values(trayModules)
   .flatMap((v) => (Array.isArray(v) ? v : []))
   .filter(isTrayPuzzle);
 
+// The first storm puzzles, made by hand: harder than the generated dailies.
+const hardModules = import.meta.glob('../content/tray/puzzles-hard.json', {
+  eager: true,
+  import: 'default',
+});
+const HARD_PUZZLES = Object.values(hardModules)
+  .flatMap((v) => (Array.isArray(v) ? v : []))
+  .filter(isTrayPuzzle);
+
 // The tray version before storms and Reverse/Rotate satellites: swaps only.
 const swapModules = import.meta.glob('../content/tray/puzzles-swaps.json', {
   eager: true,
@@ -60,7 +72,21 @@ const SWAP_PUZZLES = Object.values(swapModules)
 const TITLE = 'Signal Sats';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-type Version = 'tray' | 'swaps' | 'toggle';
+type Version = 'tray' | 'practice' | 'make' | 'hard' | 'swaps' | 'toggle';
+const VERSIONS: { value: Version; label: string }[] = [
+  { value: 'tray', label: 'Daily' },
+  { value: 'practice', label: 'Practice' },
+  { value: 'make', label: 'Make a level' },
+  { value: 'hard', label: 'Daily: hard set (previous)' },
+  { value: 'swaps', label: 'Daily: swaps only (older)' },
+  { value: 'toggle', label: 'Toggle (oldest)' },
+];
+const isVersion = (v: string): v is Version =>
+  VERSIONS.some((o) => o.value === v);
+const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
+const isDifficulty = (v: string): v is Difficulty =>
+  DIFFICULTIES.some((d) => d === v);
+const capital = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 type AppProps = { picker: ReactNode; add: (entry: LogEntry) => void };
 type TrayAppProps = AppProps & { puzzles: readonly TrayPuzzle[] };
 
@@ -151,6 +177,102 @@ const TrayApp = ({ picker, add, puzzles }: TrayAppProps) => {
       <TrayView
         key={`${puzzle.id}-${run}`}
         title={TITLE}
+        puzzle={puzzle}
+        onChange={onChange}
+        onSolved={onSolved}
+      />
+    </>
+  );
+};
+
+/** Practice: endless generated puzzles at a chosen difficulty. */
+const PracticeApp = ({ picker, add }: AppProps) => {
+  const [difficulty, setDifficulty] = useState<Difficulty>('easy');
+  // A fresh seed per puzzle; the same seed rebuilds the same puzzle.
+  const [seed, setSeed] = useState(() => `practice:${Date.now()}`);
+  const [revealed, setRevealed] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const latest = useRef<TrayState | null>(null);
+  const startedAt = useRef(Date.now());
+  const puzzle = useMemo(
+    () => generateTray(PRACTICE[difficulty], `${seed}:${difficulty}`),
+    [difficulty, seed]
+  );
+
+  useEffect(() => {
+    startedAt.current = Date.now();
+    latest.current = null;
+    setRevealed(false);
+    setFinished(false);
+  }, [puzzle]);
+
+  const record = useCallback(
+    (solved: boolean, state: TrayState | null) => {
+      add({
+        date: puzzle.answer,
+        band: difficulty,
+        mode: 'practice',
+        solved,
+        solvedOn: null,
+        transmissions: 0,
+        taps: state?.moves ?? 0,
+        seconds: Math.round((Date.now() - startedAt.current) / 1000),
+      });
+      setFinished(true);
+    },
+    [puzzle, difficulty, add]
+  );
+  const onChange = useCallback((state: TrayState) => {
+    latest.current = state;
+  }, []);
+  const onSolved = useCallback(
+    (state: TrayState) => record(true, state),
+    [record]
+  );
+
+  return (
+    <>
+      <div className="pt-bar">
+        {picker}
+        <label>
+          Difficulty
+          <select
+            value={difficulty}
+            onChange={(e) => {
+              const v = e.target.value;
+              if (isDifficulty(v)) setDifficulty(v);
+            }}
+          >
+            {DIFFICULTIES.map((d) => (
+              <option key={d} value={d}>
+                {capital(d)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button onClick={() => setSeed(`practice:${Date.now()}`)}>
+          New puzzle
+        </button>
+        {!finished && (
+          <button
+            onClick={() => {
+              record(false, latest.current);
+              setRevealed(true);
+            }}
+          >
+            Give up
+          </button>
+        )}
+      </div>
+      {revealed && (
+        <p className="pt-note">
+          The word was <b className="pt-reveal">{puzzle.answer}</b>.
+        </p>
+      )}
+      <TrayView
+        key={`${seed}-${difficulty}`}
+        title={TITLE}
+        label={capital(difficulty)}
         puzzle={puzzle}
         onChange={onChange}
         onSolved={onSolved}
@@ -283,7 +405,11 @@ const ToggleApp = ({ picker, add }: AppProps) => {
 };
 
 const modeLabel = (mode: LogEntry['mode']): string =>
-  mode === 'tray' ? 'tray' : mode === 'live' ? 'live' : '3 tries';
+  mode === 'tray' || mode === 'practice'
+    ? mode
+    : mode === 'live'
+      ? 'live'
+      : '3 tries';
 
 const LogPanel = ({
   log,
@@ -389,12 +515,14 @@ const Root = () => {
         value={version}
         onChange={(e) => {
           const v = e.target.value;
-          setVersion(v === 'toggle' || v === 'swaps' ? v : 'tray');
+          if (isVersion(v)) setVersion(v);
         }}
       >
-        <option value="tray">Tray: storms (new)</option>
-        <option value="swaps">Tray: swaps only</option>
-        <option value="toggle">Toggle (old)</option>
+        {VERSIONS.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
       </select>
     </label>
   );
@@ -403,12 +531,22 @@ const Root = () => {
     <>
       {version === 'toggle' ? (
         <ToggleApp picker={picker} add={add} />
+      ) : version === 'practice' ? (
+        <PracticeApp picker={picker} add={add} />
+      ) : version === 'make' ? (
+        <EditorApp picker={picker} />
       ) : (
         <TrayApp
           key={version}
           picker={picker}
           add={add}
-          puzzles={version === 'swaps' ? SWAP_PUZZLES : TRAY_PUZZLES}
+          puzzles={
+            version === 'swaps'
+              ? SWAP_PUZZLES
+              : version === 'hard'
+                ? HARD_PUZZLES
+                : TRAY_PUZZLES
+          }
         />
       )}
       <LogPanel log={log} clear={clear} />

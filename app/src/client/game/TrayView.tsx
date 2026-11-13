@@ -35,6 +35,8 @@ import { SlidingTiles, Tiles, type TileTone } from './Tiles';
 type TrayViewProps = {
   title: string;
   puzzle: TrayPuzzle;
+  /** The sticker by the title, e.g. "Hard" in practice. Defaults to the day. */
+  label?: string;
   onChange?: (state: TrayState) => void;
   onSolved?: (state: TrayState) => void;
 };
@@ -92,6 +94,7 @@ const shareLine = (title: string, day: string, moves: number, par: number) => {
 export const TrayView = ({
   title,
   puzzle,
+  label,
   onChange,
   onSolved,
 }: TrayViewProps) => {
@@ -255,7 +258,7 @@ export const TrayView = ({
     status = 'The dish has letters, but not a word yet.';
   }
 
-  const day = DAY[puzzle.band];
+  const day = label ?? DAY[puzzle.band];
   const share = shareLine(title, day, state.moves, puzzle.par);
 
   return (

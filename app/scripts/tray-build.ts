@@ -14,7 +14,9 @@ import { toPuzzle, type Design } from './lib/trayDesign.ts';
 import { solveTray } from './lib/traySolve.ts';
 
 const IN = 'content/tray/designs.json';
-const OUT = 'content/tray/puzzles.json';
+// The harder hand-made set, kept for comparison. The dailies are generated
+// by tray-daily.ts.
+const OUT = 'content/tray/puzzles-hard.json';
 
 const designs: Design[] = JSON.parse(readFileSync(IN, 'utf8'));
 const puzzles: TrayPuzzle[] = [];
