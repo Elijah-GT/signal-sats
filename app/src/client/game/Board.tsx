@@ -1,4 +1,11 @@
-import { useEffect, useId, useState, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useId,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+  type Ref,
+} from 'react';
 import type { Trace } from '../../shared/engine/beam';
 import { opName } from '../../shared/engine/cipher';
 import type {
@@ -41,6 +48,14 @@ type BoardProps = {
   /** Empty squares a piece can be put on, highlighted while placing. */
   targets?: readonly Point[];
   onCellTap?: (cell: Point) => void;
+  /** The board's SVG, for working out which square a drag ends on. */
+  svgRef?: Ref<SVGSVGElement>;
+  /** A press on a movable satellite: it may become a drag. */
+  onSatPointerDown?: (id: string, e: PointerEvent<SVGGElement>) => void;
+  /** The satellite being dragged, drawn faintly where it was. */
+  draggingId?: string | null;
+  /** The square a dragged satellite would land on. */
+  dropTarget?: Point | null;
 };
 
 // A fixed scatter of stars, so the sky doesn't shift between renders.
@@ -115,8 +130,13 @@ const Satellite = ({
   locked,
   fixed,
   onTap,
+  onPointerDown,
+  dragging,
 }: {
   fixed: boolean;
+  onPointerDown:
+    ((id: string, e: PointerEvent<SVGGElement>) => void) | undefined;
+  dragging: boolean;
   satellite: SatelliteData;
   angle: Settings[string];
   lit: boolean;
@@ -132,12 +152,13 @@ const Satellite = ({
   };
   return (
     <g
-      className={`sg-sat${lit ? ' sg-sat--lit' : ''}${locked ? ' sg-sat--locked' : ''}${fixed ? ' sg-sat--fixed' : ''}`}
+      className={`sg-sat${lit ? ' sg-sat--lit' : ''}${locked ? ' sg-sat--locked' : ''}${fixed ? ' sg-sat--fixed' : ''}${dragging ? ' sg-sat--dragging' : ''}${onPointerDown && !locked ? ' sg-sat--movable' : ''}`}
       transform={`translate(${x} ${y})`}
       role="button"
       tabIndex={locked ? -1 : 0}
       aria-label={`Satellite ${satellite.id}, ${opName(satellite.op)}. Mirror ${tilt}.${fixed ? ' Bolted in place.' : locked ? '' : ' Tap to turn it.'}`}
       onClick={() => !locked && onTap(satellite.id)}
+      onPointerDown={(e) => !locked && onPointerDown?.(satellite.id, e)}
       onKeyDown={onKeyDown}
     >
       <rect className="sg-sat-hit" x={-32} y={-32} width={64} height={64} />
@@ -418,6 +439,10 @@ export const Board = ({
   fixedIds,
   targets,
   onCellTap,
+  svgRef,
+  onSatPointerDown,
+  draggingId,
+  dropTarget,
 }: BoardProps) => {
   const ditherId = useId();
   const { width, height } = boardSize(board);
@@ -441,6 +466,7 @@ export const Board = ({
 
   return (
     <svg
+      ref={svgRef}
       className="sg-board"
       viewBox={`0 0 ${width} ${height}`}
       shapeRendering="crispEdges"
@@ -574,6 +600,17 @@ export const Board = ({
         );
       })}
 
+      {dropTarget && (
+        <rect
+          className="sg-drop"
+          x={cellCentre(dropTarget).x - 28}
+          y={cellCentre(dropTarget).y - 28}
+          width={56}
+          height={56}
+          aria-hidden="true"
+        />
+      )}
+
       {board.satellites.map((s) => (
         <Satellite
           key={s.id}
@@ -583,6 +620,8 @@ export const Board = ({
           locked={locked || (fixedIds?.has(s.id) ?? false)}
           fixed={fixedIds?.has(s.id) ?? false}
           onTap={onTap}
+          onPointerDown={onSatPointerDown}
+          dragging={draggingId === s.id}
         />
       ))}
 

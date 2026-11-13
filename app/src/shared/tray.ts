@@ -164,3 +164,39 @@ export const tapSatellite = (state: TrayState, id: string): TrayState => {
     moves: state.moves + 1,
   };
 };
+
+/** The placed piece on `cell`, if there is one. */
+export const pieceAt = (state: TrayState, cell: Point): string | undefined =>
+  Object.entries(state.placed).find(
+    ([, p]) => p.x === cell.x && p.y === cell.y
+  )?.[0];
+
+/**
+ * Drops a piece, from the tray or the board, on a square. An empty square
+ * takes it. A square holding another placed piece swaps them: a piece moved
+ * on the board trades squares with it, and a piece from the tray takes its
+ * square and sends it back to the tray. Each piece keeps its mirror's angle; a
+ * piece fresh from the tray faces "/". Anywhere else (off the board, debris,
+ * a storm, a bolted satellite, its own square) changes nothing.
+ */
+export const dropPiece = (
+  puzzle: TrayPuzzle,
+  state: TrayState,
+  id: string,
+  cell: Point
+): TrayState => {
+  if (!puzzle.pieces.some((p) => p.id === id)) return state;
+  const from = state.placed[id];
+  if (from && from.x === cell.x && from.y === cell.y) return state;
+  const other = pieceAt(state, cell);
+  const there = other === undefined ? undefined : state.placed[other];
+  if (!there && !isFreeCell(puzzle, state, cell)) return state;
+
+  const placed = { ...state.placed };
+  if (other !== undefined && there) {
+    if (from) placed[other] = { ...there, x: from.x, y: from.y };
+    else delete placed[other];
+  }
+  placed[id] = { x: cell.x, y: cell.y, angle: from?.angle ?? '/' };
+  return { placed, selected: null, moves: state.moves + 1 };
+};

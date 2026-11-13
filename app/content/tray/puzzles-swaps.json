@@ -1,0 +1,186 @@
+[
+  {
+    "id": "tray-mon",
+    "band": "mon",
+    "width": 4,
+    "height": 4,
+    "source": {
+      "side": "top",
+      "index": 1
+    },
+    "debris": [],
+    "fixed": [],
+    "pieces": [
+      {
+        "id": "A",
+        "op": {
+          "kind": "trade",
+          "a": 1,
+          "b": 4
+        }
+      },
+      {
+        "id": "B",
+        "op": {
+          "kind": "trade",
+          "a": 3,
+          "b": 4
+        }
+      },
+      {
+        "id": "C",
+        "op": {
+          "kind": "trade",
+          "a": 0,
+          "b": 2
+        }
+      }
+    ],
+    "ciphertext": "PBOER",
+    "answer": "PROBE",
+    "par": 2,
+    "storms": []
+  },
+  {
+    "id": "tray-wed",
+    "band": "wed",
+    "width": 5,
+    "height": 5,
+    "source": {
+      "side": "top",
+      "index": 3
+    },
+    "debris": [
+      {
+        "x": 1,
+        "y": 1
+      }
+    ],
+    "fixed": [
+      {
+        "id": "F",
+        "x": 2,
+        "y": 2,
+        "angle": "/",
+        "op": {
+          "kind": "trade",
+          "a": 1,
+          "b": 3
+        }
+      }
+    ],
+    "pieces": [
+      {
+        "id": "A",
+        "op": {
+          "kind": "trade",
+          "a": 0,
+          "b": 3
+        }
+      },
+      {
+        "id": "B",
+        "op": {
+          "kind": "trade",
+          "a": 3,
+          "b": 4
+        }
+      },
+      {
+        "id": "C",
+        "op": {
+          "kind": "trade",
+          "a": 2,
+          "b": 4
+        }
+      },
+      {
+        "id": "D",
+        "op": {
+          "kind": "trade",
+          "a": 0,
+          "b": 2
+        }
+      }
+    ],
+    "ciphertext": "ADORI",
+    "answer": "RADIO",
+    "par": 3,
+    "storms": []
+  },
+  {
+    "id": "tray-sun",
+    "band": "sun",
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 0
+    },
+    "debris": [
+      {
+        "x": 0,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "fixed": [
+      {
+        "id": "F",
+        "x": 3,
+        "y": 2,
+        "angle": "/",
+        "op": {
+          "kind": "trade",
+          "a": 2,
+          "b": 4
+        }
+      }
+    ],
+    "pieces": [
+      {
+        "id": "A",
+        "op": {
+          "kind": "trade",
+          "a": 2,
+          "b": 3
+        }
+      },
+      {
+        "id": "B",
+        "op": {
+          "kind": "trade",
+          "a": 1,
+          "b": 4
+        }
+      },
+      {
+        "id": "C",
+        "op": {
+          "kind": "trade",
+          "a": 1,
+          "b": 3
+        }
+      },
+      {
+        "id": "D",
+        "op": {
+          "kind": "trade",
+          "a": 0,
+          "b": 4
+        }
+      }
+    ],
+    "ciphertext": "VEOCI",
+    "answer": "VOICE",
+    "par": 5,
+    "storms": []
+  }
+]

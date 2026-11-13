@@ -3,14 +3,17 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { solveTray } from '../../scripts/lib/traySolve.ts';
 import {
+  dropPiece,
   isFreeCell,
   isTraySolved,
   newTrayGame,
+  pieceAt,
   selectPiece,
   tapCell,
   tapSatellite,
   trayBoard,
   type TrayPuzzle,
+  type TrayState,
 } from '../../src/shared/tray.ts';
 
 // Monday's puzzle: PBOER → PROBE with 2⇄5 then 4⇄5. 1⇄3 is a decoy.
@@ -155,5 +158,57 @@ describe('solveTray', () => {
       assert.equal(report.par, p.par, p.id);
       assert.ok(report.unusedPieces.length >= 1, `${p.id}: has a decoy`);
     }
+  });
+});
+
+describe('dragging pieces', () => {
+  const placeAt = (state: TrayState, id: string, x: number, y: number) =>
+    tapCell(puzzle, selectPiece(state, id), { x, y });
+
+  test('a piece dragged from the tray lands on an empty square', () => {
+    const state = dropPiece(puzzle, newTrayGame(), 'A', { x: 2, y: 1 });
+    assert.deepEqual(state.placed['A'], { x: 2, y: 1, angle: '/' });
+    assert.equal(state.moves, 1);
+  });
+
+  test('a placed piece dragged to an empty square moves there, keeping its angle', () => {
+    let state = tapSatellite(placeAt(newTrayGame(), 'A', 0, 0), 'A');
+    state = dropPiece(puzzle, state, 'A', { x: 2, y: 2 });
+    assert.equal(pieceAt(state, { x: 0, y: 0 }), undefined);
+    assert.equal(pieceAt(state, { x: 2, y: 2 }), 'A');
+    assert.equal(state.placed['A']?.angle, '\\');
+    assert.equal(state.moves, 3);
+  });
+
+  test('dropping one placed piece on another swaps their squares', () => {
+    let state = placeAt(newTrayGame(), 'A', 0, 0);
+    state = tapSatellite(placeAt(state, 'B', 1, 1), 'B');
+    state = dropPiece(puzzle, state, 'A', { x: 1, y: 1 });
+    assert.deepEqual(state.placed['A'], { x: 1, y: 1, angle: '/' });
+    assert.deepEqual(state.placed['B'], { x: 0, y: 0, angle: '\\' });
+  });
+
+  test('a tray piece dropped on a placed one sends that one back to the tray', () => {
+    let state = placeAt(newTrayGame(), 'A', 0, 0);
+    state = dropPiece(puzzle, state, 'C', { x: 0, y: 0 });
+    assert.equal(state.placed['A'], undefined);
+    assert.equal(pieceAt(state, { x: 0, y: 0 }), 'C');
+  });
+
+  test('debris, storms, its own square, off the board and unknown pieces change nothing', () => {
+    const stormy: TrayPuzzle = {
+      ...puzzle,
+      storms: [{ id: 'S', x: 2, y: 2, op: { kind: 'reverse' } }],
+    };
+    const state = placeAt(newTrayGame(), 'A', 0, 0);
+    for (const cell of [
+      { x: 3, y: 3 },
+      { x: 2, y: 2 },
+      { x: 0, y: 0 },
+      { x: 9, y: 0 },
+    ]) {
+      assert.equal(dropPiece(stormy, state, 'A', cell), state);
+    }
+    assert.equal(dropPiece(stormy, state, 'Z', { x: 1, y: 1 }), state);
   });
 });

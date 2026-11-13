@@ -48,21 +48,31 @@ const TRAY_PUZZLES = Object.values(trayModules)
   .flatMap((v) => (Array.isArray(v) ? v : []))
   .filter(isTrayPuzzle);
 
+// The tray version before storms and Reverse/Rotate satellites: swaps only.
+const swapModules = import.meta.glob('../content/tray/puzzles-swaps.json', {
+  eager: true,
+  import: 'default',
+});
+const SWAP_PUZZLES = Object.values(swapModules)
+  .flatMap((v) => (Array.isArray(v) ? v : []))
+  .filter(isTrayPuzzle);
+
 const TITLE = 'Signal Sats';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-type Version = 'tray' | 'toggle';
+type Version = 'tray' | 'swaps' | 'toggle';
 type AppProps = { picker: ReactNode; add: (entry: LogEntry) => void };
+type TrayAppProps = AppProps & { puzzles: readonly TrayPuzzle[] };
 
 /** The tray version: place satellites so the beam unscrambles the word. */
-const TrayApp = ({ picker, add }: AppProps) => {
+const TrayApp = ({ picker, add, puzzles }: TrayAppProps) => {
   const [index, setIndex] = useState(0);
   const [run, setRun] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [finished, setFinished] = useState(false);
   const latest = useRef<TrayState | null>(null);
   const startedAt = useRef(Date.now());
-  const puzzle = TRAY_PUZZLES[index];
+  const puzzle = puzzles[index];
 
   useEffect(() => {
     startedAt.current = Date.now();
@@ -114,7 +124,7 @@ const TrayApp = ({ picker, add }: AppProps) => {
             value={index}
             onChange={(e) => setIndex(Number(e.target.value))}
           >
-            {TRAY_PUZZLES.map((p, i) => (
+            {puzzles.map((p, i) => (
               <option key={p.id} value={i}>
                 {p.band}
               </option>
@@ -377,11 +387,13 @@ const Root = () => {
       Version
       <select
         value={version}
-        onChange={(e) =>
-          setVersion(e.target.value === 'toggle' ? 'toggle' : 'tray')
-        }
+        onChange={(e) => {
+          const v = e.target.value;
+          setVersion(v === 'toggle' || v === 'swaps' ? v : 'tray');
+        }}
       >
-        <option value="tray">Tray (new)</option>
+        <option value="tray">Tray: storms (new)</option>
+        <option value="swaps">Tray: swaps only</option>
         <option value="toggle">Toggle (old)</option>
       </select>
     </label>
@@ -389,10 +401,15 @@ const Root = () => {
 
   return (
     <>
-      {version === 'tray' ? (
-        <TrayApp picker={picker} add={add} />
-      ) : (
+      {version === 'toggle' ? (
         <ToggleApp picker={picker} add={add} />
+      ) : (
+        <TrayApp
+          key={version}
+          picker={picker}
+          add={add}
+          puzzles={version === 'swaps' ? SWAP_PUZZLES : TRAY_PUZZLES}
+        />
       )}
       <LogPanel log={log} clear={clear} />
     </>
