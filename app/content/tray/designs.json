@@ -4,125 +4,95 @@
     "band": "mon",
     "width": 4,
     "height": 4,
-    "source": {
-      "side": "top",
-      "index": 1
-    },
+    "source": { "side": "top", "index": 1 },
     "debris": [],
+    "storms": [
+      { "id": "S", "x": 2, "y": 2, "op": "reverse" }
+    ],
     "fixed": [],
     "pieces": [
-      {
-        "id": "A",
-        "swap": [2, 5]
-      },
-      {
-        "id": "B",
-        "swap": [4, 5]
-      },
-      {
-        "id": "C",
-        "swap": [1, 3]
-      }
+      { "id": "A", "swap": [4, 5] },
+      { "id": "B", "swap": [3, 5] },
+      { "id": "C", "swap": [1, 2] }
+    ],
+    "decoys": [
+      "C"
     ],
     "answer": "PROBE",
-    "intended": ["A", "B"]
+    "intended": [
+      "A",
+      "S",
+      "B"
+    ]
   },
   {
     "id": "tray-wed",
     "band": "wed",
     "width": 5,
     "height": 5,
-    "source": {
-      "side": "top",
-      "index": 3
-    },
+    "source": { "side": "top", "index": 3 },
     "debris": [
-      {
-        "x": 1,
-        "y": 1
-      }
+      { "x": 1, "y": 1 }
+    ],
+    "storms": [
+      { "id": "S", "x": 3, "y": 3, "op": "rotate" }
     ],
     "fixed": [
-      {
-        "id": "F",
-        "x": 2,
-        "y": 2,
-        "angle": "/",
-        "swap": [2, 4]
-      }
+      { "id": "F", "x": 2, "y": 2, "angle": "/", "swap": [1, 5] }
     ],
     "pieces": [
-      {
-        "id": "A",
-        "swap": [1, 4]
-      },
-      {
-        "id": "B",
-        "swap": [4, 5]
-      },
-      {
-        "id": "C",
-        "swap": [3, 5]
-      },
-      {
-        "id": "D",
-        "swap": [1, 3]
-      }
+      { "id": "A", "swap": [1, 2] },
+      { "id": "B", "swap": [2, 4] },
+      { "id": "R", "op": "reverse" },
+      { "id": "D", "swap": [4, 5] }
+    ],
+    "decoys": [
+      "D"
     ],
     "answer": "RADIO",
-    "intended": ["A", "F", "B", "C"]
+    "intended": [
+      "A",
+      "F",
+      "R",
+      "S",
+      "B"
+    ]
   },
   {
     "id": "tray-sun",
     "band": "sun",
     "width": 5,
     "height": 6,
-    "source": {
-      "side": "top",
-      "index": 0
-    },
+    "source": { "side": "top", "index": 0 },
     "debris": [
-      {
-        "x": 0,
-        "y": 4
-      },
-      {
-        "x": 2,
-        "y": 4
-      },
-      {
-        "x": 4,
-        "y": 4
-      }
+      { "x": 0, "y": 4 },
+      { "x": 2, "y": 4 },
+      { "x": 4, "y": 4 }
+    ],
+    "storms": [
+      { "id": "S", "x": 1, "y": 4, "op": "rotate" },
+      { "id": "T", "x": 2, "y": 1, "op": "reverse" }
     ],
     "fixed": [
-      {
-        "id": "F",
-        "x": 3,
-        "y": 2,
-        "angle": "/",
-        "swap": [3, 5]
-      }
+      { "id": "F", "x": 3, "y": 2, "angle": "/", "swap": [3, 4] }
     ],
     "pieces": [
-      {
-        "id": "A",
-        "swap": [3, 4]
-      },
-      {
-        "id": "B",
-        "swap": [2, 5]
-      },
-      {
-        "id": "C",
-        "swap": [2, 4]
-      },
-      {
-        "id": "D",
-        "swap": [1, 5]
-      }
+      { "id": "A", "swap": [4, 5] },
+      { "id": "B", "swap": [1, 4] },
+      { "id": "R", "op": "rotate" },
+      { "id": "D", "swap": [1, 5] }
+    ],
+    "decoys": [
+      "D"
     ],
     "answer": "VOICE",
-    "intended": ["A", "F", "B", "C"]
+    "intended": [
+      "R",
+      "T",
+      "A",
+      "F",
+      "B",
+      "S"
+    ]
   }
 ]

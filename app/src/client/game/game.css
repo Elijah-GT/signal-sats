@@ -559,6 +559,45 @@
 }
 
 /* Letter swaps: faint dots are letters a satellite leaves alone. */
+/* Storms: the beam passes through and they scramble the signal. */
+.sg-px-storm {
+  fill: #5b3fa8;
+}
+.sg-px-storm-edge {
+  fill: #9077e6;
+}
+.sg-px-storm-dark {
+  fill: #33216b;
+}
+.sg-px-bolt {
+  fill: var(--sg-hot);
+  animation: sg-bolt 2.4s steps(1) infinite;
+}
+.sg-storm-op {
+  color: #fff;
+}
+.sg-storm--lit .sg-px-storm {
+  fill: #7b54e0;
+}
+.sg-storm--lit .sg-px-storm-edge {
+  fill: #c3b2ff;
+}
+@keyframes sg-bolt {
+  0%,
+  70% {
+    opacity: 0.25;
+  }
+  75%,
+  85% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg-px-bolt {
+    animation: none;
+  }
+}
+
 .sg-px-ink--faint {
   opacity: 0.3;
 }
@@ -713,4 +752,35 @@
   .sg-tile--slide {
     transition: none;
   }
+}
+
+/* What each kind of satellite does, in the help card. */
+.sg-kinds {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.sg-kinds li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.sg-kinds .sg-op-icon {
+  flex: none;
+  background: var(--sg-cream);
+  color: var(--sg-night);
+  box-shadow: inset 0 0 0 2px var(--sg-edge);
+}
+.sg-kinds-storm {
+  flex: none;
+  width: 26px;
+  height: 18px;
+  background: #5b3fa8;
+  box-shadow:
+    inset 0 3px 0 #9077e6,
+    inset 0 -3px 0 #33216b;
 }

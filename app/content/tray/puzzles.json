@@ -9,13 +9,23 @@
       "index": 1
     },
     "debris": [],
+    "storms": [
+      {
+        "id": "S",
+        "x": 2,
+        "y": 2,
+        "op": {
+          "kind": "reverse"
+        }
+      }
+    ],
     "fixed": [],
     "pieces": [
       {
         "id": "A",
         "op": {
           "kind": "trade",
-          "a": 1,
+          "a": 3,
           "b": 4
         }
       },
@@ -23,7 +33,7 @@
         "id": "B",
         "op": {
           "kind": "trade",
-          "a": 3,
+          "a": 2,
           "b": 4
         }
       },
@@ -32,13 +42,13 @@
         "op": {
           "kind": "trade",
           "a": 0,
-          "b": 2
+          "b": 1
         }
       }
     ],
-    "ciphertext": "PBOER",
+    "ciphertext": "OBEPR",
     "answer": "PROBE",
-    "par": 2
+    "par": 4
   },
   {
     "id": "tray-wed",
@@ -55,6 +65,16 @@
         "y": 1
       }
     ],
+    "storms": [
+      {
+        "id": "S",
+        "x": 3,
+        "y": 3,
+        "op": {
+          "kind": "rotate"
+        }
+      }
+    ],
     "fixed": [
       {
         "id": "F",
@@ -63,8 +83,8 @@
         "angle": "/",
         "op": {
           "kind": "trade",
-          "a": 1,
-          "b": 3
+          "a": 0,
+          "b": 4
         }
       }
     ],
@@ -74,37 +94,35 @@
         "op": {
           "kind": "trade",
           "a": 0,
-          "b": 3
+          "b": 1
         }
       },
       {
         "id": "B",
         "op": {
           "kind": "trade",
-          "a": 3,
-          "b": 4
+          "a": 1,
+          "b": 3
         }
       },
       {
-        "id": "C",
+        "id": "R",
         "op": {
-          "kind": "trade",
-          "a": 2,
-          "b": 4
+          "kind": "reverse"
         }
       },
       {
         "id": "D",
         "op": {
           "kind": "trade",
-          "a": 0,
-          "b": 2
+          "a": 3,
+          "b": 4
         }
       }
     ],
-    "ciphertext": "ADORI",
+    "ciphertext": "DOIRA",
     "answer": "RADIO",
-    "par": 3
+    "par": 5
   },
   {
     "id": "tray-sun",
@@ -129,6 +147,24 @@
         "y": 4
       }
     ],
+    "storms": [
+      {
+        "id": "S",
+        "x": 1,
+        "y": 4,
+        "op": {
+          "kind": "rotate"
+        }
+      },
+      {
+        "id": "T",
+        "x": 2,
+        "y": 1,
+        "op": {
+          "kind": "reverse"
+        }
+      }
+    ],
     "fixed": [
       {
         "id": "F",
@@ -138,7 +174,7 @@
         "op": {
           "kind": "trade",
           "a": 2,
-          "b": 4
+          "b": 3
         }
       }
     ],
@@ -147,24 +183,22 @@
         "id": "A",
         "op": {
           "kind": "trade",
-          "a": 2,
-          "b": 3
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "B",
         "op": {
           "kind": "trade",
-          "a": 1,
-          "b": 4
+          "a": 0,
+          "b": 3
         }
       },
       {
-        "id": "C",
+        "id": "R",
         "op": {
-          "kind": "trade",
-          "a": 1,
-          "b": 3
+          "kind": "rotate"
         }
       },
       {
@@ -176,7 +210,7 @@
         }
       }
     ],
-    "ciphertext": "VEOCI",
+    "ciphertext": "IOCEV",
     "answer": "VOICE",
     "par": 5
   }

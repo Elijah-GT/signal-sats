@@ -35,9 +35,17 @@ export type TrayReport = {
 
 type Occupant = { id: string; op: CipherOp; angle: Angle; placed: boolean };
 
-/** Explores the beam path, deciding at each empty square whether to place a piece. */
-export const solveTray = (puzzle: TrayPuzzle): TrayReport => {
+/**
+ * Explores the beam path, deciding at each empty square whether to place a
+ * piece. A build counts when the beam reaches the dish with text that passes
+ * `goal`: by default, the answer. Passing `() => true` lists every route.
+ */
+export const solveTray = (
+  puzzle: TrayPuzzle,
+  goal: (text: string) => boolean = (text) => text === puzzle.answer
+): TrayReport => {
   const debris = new Set(puzzle.debris.map(pointKey));
+  const storms = new Map(puzzle.storms.map((s) => [pointKey(s), s]));
   const occupied = new Map<string, Occupant>();
   for (const f of puzzle.fixed) {
     occupied.set(pointKey(f), {
@@ -67,7 +75,7 @@ export const solveTray = (puzzle: TrayPuzzle): TrayReport => {
         walk(next, d, t, steps + 1);
         return;
       }
-      if (exitPortOf(cell, d).side === 'bottom' && t === puzzle.answer) {
+      if (exitPortOf(cell, d).side === 'bottom' && goal(t)) {
         const placements: TraySolution['placements'] = {};
         let moves = 0;
         for (const [k, o] of occupied) {
@@ -84,6 +92,15 @@ export const solveTray = (puzzle: TrayPuzzle): TrayReport => {
     if (here) {
       order.push(here.id);
       advance(reflect(dir, here.angle), applyOp(text, here.op));
+      order.pop();
+      return;
+    }
+
+    // Storms let the beam straight through and can't hold a piece.
+    const storm = storms.get(key);
+    if (storm) {
+      order.push(storm.id);
+      advance(dir, applyOp(text, storm.op));
       order.pop();
       return;
     }
@@ -119,7 +136,7 @@ export const solveTray = (puzzle: TrayPuzzle): TrayReport => {
   return {
     solutions,
     orders,
-    par: Math.min(...solutions.map((s) => s.moves)),
+    par: solutions.length ? Math.min(...solutions.map((s) => s.moves)) : 0,
     unusedPieces: puzzle.pieces
       .map((p) => p.id)
       .filter((id) => !usedIds.has(id)),

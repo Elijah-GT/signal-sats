@@ -45,3 +45,24 @@ export const DISH_UNIT = 3;
 
 // A chevron pointing down: where the signal comes in.
 export const CHEVRON = ['#.....#', '.#...#.', '..#.#..', '...#...'];
+
+/** A storm cloud. The beam passes straight through it; its op sits on top. */
+export const STORM = [
+  '....eeee......',
+  '..eeSSSSee....',
+  '.eSSSSSSSSee..',
+  'eSSSSSSSSSSSe.',
+  'eSSSSSSSSSSSSe',
+  'eSSSSSSSSSSSSe',
+  '.dSSSSSSSSSSd.',
+  '..dddddddddd..',
+  '....l....l....',
+  '...l....l.....',
+];
+export const STORM_TONE: Tone = {
+  e: 'sg-px-storm-edge',
+  S: 'sg-px-storm',
+  d: 'sg-px-storm-dark',
+  l: 'sg-px-bolt',
+};
+export const STORM_UNIT = 4;

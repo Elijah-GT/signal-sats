@@ -18,67 +18,65 @@ const shiftLetters = (text: string, amount: number): string =>
 const mirrorLetters = (text: string): string =>
   mapLetters(text, (i) => LETTERS - 1 - i);
 
-const reverse = (text: string): string => [...text].reverse().join('');
-
-/** Swaps letters 1↔2, 3↔4, … An odd last letter stays put. */
-const swapPairs = (text: string): string => {
-  let out = '';
-  for (let i = 0; i < text.length; i += 2) {
-    out +=
-      i + 1 < text.length
-        ? text.charAt(i + 1) + text.charAt(i)
-        : text.charAt(i);
-  }
-  return out;
-};
-
-const rotateLeft = (text: string): string =>
-  text.length < 2 ? text : text.slice(1) + text.charAt(0);
-
 const rotateRight = (text: string): string =>
   text.length < 2 ? text : text.charAt(text.length - 1) + text.slice(0, -1);
 
-/** Swaps the letters at two positions. Out-of-range positions change nothing. */
-const trade = (text: string, a: number, b: number): string => {
-  if (a === b || a >= text.length || b >= text.length) return text;
-  const letters = [...text];
-  [letters[a], letters[b]] = [letters[b] ?? '', letters[a] ?? ''];
-  return letters.join('');
+/**
+ * Where an op moves things: the same rearrangement the structural ops make to
+ * letters, applied to any list. Shift and Mirror change letters, not places, so
+ * they leave the list as it is. The game uses it to slide letter tiles.
+ */
+export const permute = <T>(items: readonly T[], op: CipherOp): T[] => {
+  const out = [...items];
+  sourcePlaces(op, items.length).forEach((from, to) => {
+    const item = items[from];
+    if (item !== undefined) out[to] = item;
+  });
+  return out;
+};
+
+/** For each place, the place its item comes from after `op`. */
+const sourcePlaces = (op: CipherOp, n: number): number[] => {
+  const places = Array.from({ length: n }, (_, i) => i);
+  switch (op.kind) {
+    case 'reverse':
+      return places.reverse();
+    case 'swap':
+      return places.map((i) => (i % 2 === 0 ? (i + 1 < n ? i + 1 : i) : i - 1));
+    case 'rotate':
+      return places.map((i) => (i + 1) % n);
+    case 'trade':
+      return op.a >= n || op.b >= n
+        ? places
+        : places.map((i) => (i === op.a ? op.b : i === op.b ? op.a : i));
+    case 'shift':
+    case 'mirror':
+      return places;
+  }
 };
 
 /** What a satellite does to the text passing through it. */
 export const applyOp = (text: string, op: CipherOp): string => {
   switch (op.kind) {
-    case 'reverse':
-      return reverse(text);
-    case 'swap':
-      return swapPairs(text);
-    case 'rotate':
-      return rotateLeft(text);
     case 'shift':
       return shiftLetters(text, op.amount);
     case 'mirror':
       return mirrorLetters(text);
-    case 'trade':
-      return trade(text, op.a, op.b);
+    default:
+      return permute([...text], op).join('');
   }
 };
 
 /** Undoes `applyOp`, so `unapplyOp(applyOp(text, op), op) === text`. */
 export const unapplyOp = (text: string, op: CipherOp): string => {
   switch (op.kind) {
-    case 'reverse':
-      return reverse(text);
-    case 'swap':
-      return swapPairs(text);
     case 'rotate':
       return rotateRight(text);
     case 'shift':
       return shiftLetters(text, -op.amount);
-    case 'mirror':
-      return mirrorLetters(text);
-    case 'trade':
-      return trade(text, op.a, op.b);
+    default:
+      // Every other op undoes itself.
+      return applyOp(text, op);
   }
 };
 

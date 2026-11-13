@@ -6,6 +6,7 @@ import type {
   Point,
   Satellite as SatelliteData,
   Settings,
+  Storm as StormData,
 } from '../../shared/engine/types';
 import {
   LAYOUT,
@@ -21,6 +22,9 @@ import {
   DISH,
   DISH_TONE,
   DISH_UNIT,
+  STORM,
+  STORM_TONE,
+  STORM_UNIT,
 } from './sprites';
 import { Bitmap, OpGlyph } from './pixels';
 
@@ -176,6 +180,32 @@ const Satellite = ({
   );
 };
 
+const STORM_W = (STORM[0]?.length ?? 0) * STORM_UNIT;
+
+/** A storm cloud with its op on it. It glows while the beam runs through. */
+const Storm = ({ storm, lit }: { storm: StormData; lit: boolean }) => {
+  const { x, y } = cellCentre(storm);
+  return (
+    <g
+      className={`sg-storm${lit ? ' sg-storm--lit' : ''}`}
+      transform={`translate(${x} ${y})`}
+      role="img"
+      aria-label={`Storm: ${opName(storm.op)}. The beam passes straight through it.`}
+    >
+      <Bitmap
+        rows={STORM}
+        unit={STORM_UNIT}
+        tone={STORM_TONE}
+        x={-STORM_W / 2}
+        y={-22}
+      />
+      <g className="sg-storm-op" transform="translate(0 -4)">
+        <OpGlyph op={storm.op} />
+      </g>
+    </g>
+  );
+};
+
 const reducedMotion = (): boolean =>
   typeof window !== 'undefined' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -223,7 +253,7 @@ const pointAt = (legs: readonly Leg[], distance: number): Point => {
 const hitDistances = (
   points: readonly Point[],
   legs: readonly Leg[],
-  hits: readonly SatelliteData[]
+  hits: readonly (SatelliteData | StormData)[]
 ): number[] => {
   const out: number[] = [];
   let from = 1;
@@ -242,7 +272,7 @@ const hitDistances = (
 
 type PacketProps = {
   points: readonly Point[];
-  hits: readonly SatelliteData[];
+  hits: readonly (SatelliteData | StormData)[];
   /** The signal, then the text after each satellite. */
   texts: readonly string[];
 };
@@ -301,8 +331,11 @@ const Packet = ({ points, hits, texts }: PacketProps) => {
   }
 
   const text = texts[passed] ?? '';
-  const op = passed > 0 ? hits[passed - 1]?.op : undefined;
-  const moved = dwelling && op?.kind === 'trade' ? [op.a, op.b] : [];
+  // Letters that just changed place, while the packet waits after a stop.
+  const before = texts[passed - 1] ?? text;
+  const moved = dwelling
+    ? [...text].flatMap((c, i) => (c !== before.charAt(i) ? [i] : []))
+    : [];
   const at = pointAt(legs, distance);
 
   return (
@@ -512,6 +545,10 @@ export const Board = ({
           </g>
         );
       })}
+
+      {board.storms?.map((s) => (
+        <Storm key={s.id} storm={s} lit={lit.has(s.id)} />
+      ))}
 
       {targets?.map((t) => {
         const c = cellCentre(t);

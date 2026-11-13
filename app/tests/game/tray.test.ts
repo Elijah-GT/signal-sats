@@ -21,6 +21,7 @@ const puzzle: TrayPuzzle = {
   height: 4,
   source: { side: 'top', index: 1 },
   debris: [{ x: 3, y: 3 }],
+  storms: [],
   fixed: [],
   pieces: [
     { id: 'A', op: { kind: 'trade', a: 1, b: 4 } },
@@ -62,6 +63,16 @@ describe('tray rules', () => {
       assert.equal(isFreeCell(puzzle, state, cell), false);
       assert.equal(tapCell(puzzle, state, cell), state);
     }
+  });
+
+  test('pieces cannot go on a storm', () => {
+    const stormy = {
+      ...puzzle,
+      storms: [{ id: 'S', x: 2, y: 2, op: { kind: 'reverse' } as const }],
+    };
+    const state = selectPiece(newTrayGame(), 'A');
+    assert.equal(isFreeCell(stormy, state, { x: 2, y: 2 }), false);
+    assert.equal(trayBoard(stormy, state).board.storms?.length, 1);
   });
 
   test('tapping a square with nothing picked up does nothing', () => {

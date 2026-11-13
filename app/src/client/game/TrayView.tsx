@@ -5,7 +5,8 @@ import '@fontsource/reddit-sans/latin-700.css';
 import './game.css';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { applyOp, opName } from '../../shared/engine/cipher';
+import { applyOp, opName, permute } from '../../shared/engine/cipher';
+import type { CipherOp } from '../../shared/engine/types';
 import type { DayBand } from '../../shared/puzzle';
 import {
   isFreeCell,
@@ -40,6 +41,20 @@ const DAY: Record<DayBand, string> = {
 };
 
 const PLACEHOLDER = '·····';
+
+/** The short name on a tray piece. */
+const pieceLabel = (op: CipherOp): string =>
+  op.kind === 'trade' ? `${op.a + 1}⇄${op.b + 1}` : opName(op);
+
+/** What each kind of satellite does, for the help card. */
+const KIND_HELP: Partial<Record<CipherOp['kind'], string>> = {
+  trade: 'Swap: trades the two letters its dots mark.',
+  reverse: 'Reverse: flips the whole signal back to front.',
+  rotate: 'Rotate: moves the first letter to the end.',
+};
+
+const plural = (n: number, one: string, many: string) =>
+  `${n} ${n === 1 ? one : many}`;
 
 /** Spoiler-free share line, e.g. "Signal Sats Wed · 4 moves (par 3)\n🛰🛰🛰🛰📡". */
 const shareLine = (title: string, day: string, moves: number, par: number) => {
@@ -93,20 +108,31 @@ export const TrayView = ({
     [puzzle.ciphertext]
   );
 
-  // Where each signal letter has moved to after the satellites on the beam,
-  // so the top row can slide letters as they swap.
-  const order = current.trace.hits.reduce<number[]>(
-    (acc, s) => {
-      if (s.op.kind !== 'trade') return acc;
-      const next = [...acc];
-      const { a, b } = s.op;
-      [next[a], next[b]] = [acc[b] ?? b, acc[a] ?? a];
-      return next;
-    },
-    [...puzzle.ciphertext].map((_, i) => i)
+  // Where each signal letter has moved to after each stop on the beam, so the
+  // top row can slide letters into place.
+  const orders = current.trace.hits.reduce<number[][]>(
+    (acc, s) => [...acc, permute(acc.at(-1) ?? [], s.op)],
+    [[...puzzle.ciphertext].map((_, i) => i)]
   );
-  const lastOp = current.trace.hits.at(-1)?.op;
-  const lastSwap = lastOp?.kind === 'trade' ? [lastOp.a, lastOp.b] : [];
+  const order = orders.at(-1) ?? [];
+  const before = orders.at(-2);
+  const lastMoved = before
+    ? order.flatMap((o, p) => (o !== before[p] ? [p] : []))
+    : [];
+  const stormIds = new Set(puzzle.storms.map((s) => s.id));
+  const stormHits = current.trace.hits.filter((h) => stormIds.has(h.id)).length;
+  const satHits = current.trace.hits.length - stormHits;
+  const kinds = [
+    ...new Set(
+      [...puzzle.pieces, ...puzzle.fixed, ...puzzle.storms].map(
+        (s) => s.op.kind
+      )
+    ),
+  ];
+  const sampleOp = (kind: CipherOp['kind']) =>
+    [...puzzle.pieces, ...puzzle.fixed, ...puzzle.storms].find(
+      (s) => s.op.kind === kind
+    )?.op;
 
   const readout = current.output ?? PLACEHOLDER;
   const tone: TileTone = solved
@@ -150,13 +176,18 @@ export const TrayView = ({
         <SlidingTiles
           letters={puzzle.ciphertext}
           order={order}
-          moved={lastSwap}
+          moved={lastMoved}
           label="Signal after the satellites on the beam"
         />
         <p className="sg-signal-note">
           {current.trace.hits.length === 0
             ? 'Incoming signal'
-            : `Signal ${puzzle.ciphertext}, after ${current.trace.hits.length} ${current.trace.hits.length === 1 ? 'satellite' : 'satellites'}`}
+            : `Signal ${puzzle.ciphertext}, after ${[
+                satHits ? plural(satHits, 'satellite', 'satellites') : '',
+                stormHits ? plural(stormHits, 'storm', 'storms') : '',
+              ]
+                .filter(Boolean)
+                .join(' and ')}`}
         </p>
       </div>
 
@@ -215,11 +246,7 @@ export const TrayView = ({
                   <span className="sg-piece-icon">
                     <OpIcon op={piece.op} size={30} />
                   </span>
-                  <span className="sg-piece-label">
-                    {piece.op.kind === 'trade'
-                      ? `${piece.op.a + 1}⇄${piece.op.b + 1}`
-                      : opName(piece.op)}
-                  </span>
+                  <span className="sg-piece-label">{pieceLabel(piece.op)}</span>
                   <span className="sg-piece-state">
                     {onBoard ? 'placed' : picked ? 'placing' : ''}
                   </span>
@@ -241,12 +268,33 @@ export const TrayView = ({
           How it works
         </h2>
         <p className="sg-help">
-          Each satellite swaps the two letters its dots mark. Place satellites
-          so the beam carries the signal through them in the right order and
-          down into the dish. Tap a placed satellite to turn its mirror; tap it
-          in the tray to pick it back up. Bolted satellites can&apos;t move. Not
-          every satellite in the tray is needed.
+          Place satellites so the beam carries the signal through them in the
+          right order and down into the dish. Tap a placed satellite to turn its
+          mirror; tap it in the tray to pick it back up. Bolted satellites
+          can&apos;t move. Not every satellite in the tray is needed.
         </p>
+        <ul className="sg-kinds">
+          {kinds.map((kind) => {
+            const op = sampleOp(kind);
+            const help = KIND_HELP[kind];
+            if (!op || !help) return null;
+            return (
+              <li key={kind}>
+                <OpIcon op={op} size={26} />
+                <span>{help}</span>
+              </li>
+            );
+          })}
+          {puzzle.storms.length > 0 && (
+            <li>
+              <span className="sg-kinds-storm" aria-hidden="true" />
+              <span>
+                Storms: the beam goes straight through and the storm scrambles
+                the signal its way, every time. Nothing can sit on a storm.
+              </span>
+            </li>
+          )}
+        </ul>
       </section>
     </main>
   );

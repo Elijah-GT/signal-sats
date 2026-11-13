@@ -8,7 +8,14 @@ import {
   step,
 } from './grid.ts';
 import { angleFor } from './settings.ts';
-import type { Board, Point, Port, Satellite, Settings } from './types.ts';
+import type {
+  Board,
+  Point,
+  Port,
+  Satellite,
+  Settings,
+  Storm,
+} from './types.ts';
 
 export type BeamEnd =
   | { kind: 'received'; port: Port }
@@ -18,8 +25,8 @@ export type BeamEnd =
 export type Trace = {
   /** Cells the beam crosses, in order. A cell can appear twice. A debris cell that stops the beam is not included. */
   cells: Point[];
-  /** Satellites in the order the beam hits them. The same satellite can appear twice. */
-  hits: Satellite[];
+  /** Satellites and storms in the order the beam meets them. The same one can appear twice. */
+  hits: (Satellite | Storm)[];
   end: BeamEnd;
 };
 
@@ -28,9 +35,12 @@ export const traceBeam = (board: Board, settings: Settings): Trace => {
   const satellites = new Map<string, Satellite>(
     board.satellites.map((s) => [pointKey(s), s])
   );
+  const storms = new Map<string, Storm>(
+    (board.storms ?? []).map((s) => [pointKey(s), s])
+  );
   const debris = new Set(board.debris.map(pointKey));
   const cells: Point[] = [];
-  const hits: Satellite[] = [];
+  const hits: (Satellite | Storm)[] = [];
   let { cell, dir } = entryOf(board, board.source);
 
   // With two-angle reflectors, a beam that enters from the edge always leaves
@@ -47,6 +57,9 @@ export const traceBeam = (board: Board, settings: Settings): Trace => {
     if (satellite) {
       hits.push(satellite);
       dir = reflect(dir, angleFor(settings, satellite.id));
+    } else {
+      const storm = storms.get(pointKey(cell));
+      if (storm) hits.push(storm);
     }
 
     const next = step(cell, dir);

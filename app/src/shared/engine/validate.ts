@@ -5,9 +5,31 @@ import {
   reachesReceiver,
   receiverInRange,
 } from './grid.ts';
-import type { Board, Point } from './types.ts';
+import type { Board, CipherOp, Point } from './types.ts';
 
 const isPositiveInt = (n: number): boolean => Number.isInteger(n) && n > 0;
+
+/** Problems with one satellite's or storm's operation. */
+const opErrors = (label: string, op: CipherOp): string[] => {
+  if (
+    op.kind === 'shift' &&
+    !(Number.isInteger(op.amount) && op.amount >= 1 && op.amount <= 25)
+  ) {
+    return [`${label} has a shift amount outside 1–25`];
+  }
+  if (
+    op.kind === 'trade' &&
+    !(
+      Number.isInteger(op.a) &&
+      Number.isInteger(op.b) &&
+      0 <= op.a &&
+      op.a < op.b
+    )
+  ) {
+    return [`${label} must swap two different letter positions`];
+  }
+  return [];
+};
 
 /** Problems with a board's layout. An empty list means the board is usable. */
 export const validateBoard = (board: Board): string[] => {
@@ -45,24 +67,14 @@ export const validateBoard = (board: Board): string[] => {
     else if (ids.has(satellite.id)) errors.push(`${label} id is used twice`);
     ids.add(satellite.id);
     place(satellite, label);
-    const { op } = satellite;
-    if (
-      op.kind === 'shift' &&
-      !(Number.isInteger(op.amount) && op.amount >= 1 && op.amount <= 25)
-    ) {
-      errors.push(`${label} has a shift amount outside 1–25`);
-    }
-    if (
-      op.kind === 'trade' &&
-      !(
-        Number.isInteger(op.a) &&
-        Number.isInteger(op.b) &&
-        0 <= op.a &&
-        op.a < op.b
-      )
-    ) {
-      errors.push(`${label} must swap two different letter positions`);
-    }
+    errors.push(...opErrors(label, satellite.op));
+  }
+  for (const storm of board.storms ?? []) {
+    const label = `Storm "${storm.id}"`;
+    if (ids.has(storm.id)) errors.push(`${label} id is used twice`);
+    ids.add(storm.id);
+    place(storm, label);
+    errors.push(...opErrors(label, storm.op));
   }
   board.debris.forEach((d, i) => place(d, `Debris ${i + 1}`));
   return errors;

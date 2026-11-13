@@ -11,6 +11,7 @@ import type {
   Port,
   Satellite,
   Settings,
+  Storm,
 } from './engine/types.ts';
 import type { DayBand } from './puzzle.ts';
 
@@ -27,6 +28,8 @@ export type TrayPuzzle = {
   height: number;
   source: Port;
   debris: readonly Point[];
+  /** Storms the beam passes through, changing the text. */
+  storms: readonly Storm[];
   fixed: readonly FixedSatellite[];
   pieces: readonly TrayPiece[];
   ciphertext: string;
@@ -80,6 +83,7 @@ export const trayBoard = (
       receiver: { side: 'bottom', from: 0, to: puzzle.width - 1 },
       satellites,
       debris: puzzle.debris,
+      storms: puzzle.storms,
     },
     settings,
   };
@@ -112,6 +116,7 @@ export const isFreeCell = (
   }
   const taken = new Set([
     ...puzzle.debris.map(pointKey),
+    ...puzzle.storms.map(pointKey),
     ...puzzle.fixed.map(pointKey),
     ...Object.values(state.placed).map(pointKey),
   ]);
