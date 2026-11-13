@@ -1,66 +1,92 @@
-import './index.css';
+import '@fontsource/silkscreen/latin-700.css';
+import '@fontsource/reddit-sans/latin-400.css';
+import './game/game.css';
+import './app.css';
 
-import { navigateTo } from '@devvit/web/client';
 import { context, requestExpandedMode } from '@devvit/web/client';
-import { StrictMode } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import type { InitResponse } from '../shared/api';
+import { Tiles } from './game/Tiles';
+import { fetchInit } from './net';
+
+const DAY: Record<string, string> = {
+  mon: 'Mon',
+  tue: 'Tue',
+  wed: 'Wed',
+  thu: 'Thu',
+  fri: 'Fri',
+  sat: 'Sat',
+  sun: 'Sun',
+};
+
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/** The sticker from the post's own data, so it shows before the server answers. */
+const sticker = (): string => {
+  const d = context.postData;
+  if (!isRecord(d)) return '';
+  if (d['kind'] === 'daily') {
+    const band = typeof d['band'] === 'string' ? (DAY[d['band']] ?? '') : '';
+    const number = typeof d['number'] === 'number' ? d['number'] : '';
+    return `#${number} · ${band}`;
+  }
+  return typeof d['author'] === 'string' && d['author']
+    ? `Level by u/${d['author']}`
+    : 'Level';
+};
+
+/** One line on how it's going: your result, or how many have solved it. */
+const status = (init: InitResponse | null): string => {
+  if (!init) return '';
+  if (init.mine) return `✓ You decoded it in ${init.mine.moves} moves`;
+  const n = init.stats.solves;
+  if (n === 0) return 'Be the first to decode it';
+  return `${n} ${n === 1 ? 'player has' : 'players have'} decoded it`;
+};
 
 export const Splash = () => {
+  const [init, setInit] = useState<InitResponse | null>(null);
+  useEffect(() => {
+    fetchInit()
+      .then(setInit)
+      .catch(() => setInit(null));
+  }, []);
+  const tag = sticker();
+
   return (
-    <div className="flex relative flex-col justify-center items-center min-h-screen gap-4 bg-white dark:bg-gray-900">
-      <img
-        className="object-contain w-1/2 max-w-[250px] mx-auto"
-        src="/snoo.png"
-        alt="Snoo"
+    <main className="sg splash">
+      <h1 className="sg-title">Signal Sats</h1>
+      {tag && <span className="sg-day">{tag}</span>}
+      <Tiles
+        text={init?.puzzle.ciphertext ?? '·····'}
+        tone="incoming"
+        label="The scrambled signal"
       />
-      <div className="flex flex-col items-center gap-2">
-        <h1 className="text-2xl font-bold text-center text-gray-900 dark:text-white">
-          Hey {context.username ?? 'user'} 👋
-        </h1>
-        <p className="text-base text-center text-gray-600 dark:text-gray-300">
-          Edit{' '}
-          <span className="bg-[#e5ebee] dark:bg-gray-700 px-1 py-0.5 rounded">
-            src/client/splash.tsx
-          </span>{' '}
-          to get started.
-        </p>
-      </div>
-      <div className="flex items-center justify-center mt-5">
-        <button
-          className="flex items-center justify-center bg-[#d93900] dark:bg-orange-600 text-white w-auto h-10 rounded-full cursor-pointer transition-colors px-4 hover:bg-[#c23300] dark:hover:bg-orange-700"
-          onClick={(e) => requestExpandedMode(e.nativeEvent, 'game')}
-        >
-          Tap to Start
-        </button>
-      </div>
-      <footer className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-3 text-[0.8em] text-gray-600 dark:text-gray-400">
-        <button
-          className="cursor-pointer hover:text-gray-900 dark:hover:text-white transition-colors"
-          onClick={() => navigateTo('https://developers.reddit.com/docs')}
-        >
-          Docs
-        </button>
-        <span className="text-gray-300 dark:text-gray-600">|</span>
-        <button
-          className="cursor-pointer hover:text-gray-900 dark:hover:text-white transition-colors"
-          onClick={() => navigateTo('https://www.reddit.com/r/Devvit')}
-        >
-          r/Devvit
-        </button>
-        <span className="text-gray-300 dark:text-gray-600">|</span>
-        <button
-          className="cursor-pointer hover:text-gray-900 dark:hover:text-white transition-colors"
-          onClick={() => navigateTo('https://discord.com/invite/R7yu2wh9Qz')}
-        >
-          Discord
-        </button>
-      </footer>
-    </div>
+      <p className="splash-tag">
+        Place satellites to bounce the signal down to Earth and unscramble the
+        word.
+      </p>
+      <p className="splash-status">
+        {status(init)}
+        {init && init.streak > 0 ? ` · 🔥 ${init.streak}` : ''}
+      </p>
+      <button
+        className="sg-button"
+        onClick={(e) => requestExpandedMode(e.nativeEvent, 'game')}
+      >
+        {init?.mine ? 'Open' : 'Play'}
+      </button>
+    </main>
   );
 };
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Splash />
-  </StrictMode>
-);
+const root = document.getElementById('root');
+if (root) {
+  createRoot(root).render(
+    <StrictMode>
+      <Splash />
+    </StrictMode>
+  );
+}

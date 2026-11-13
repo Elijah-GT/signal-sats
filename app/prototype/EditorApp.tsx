@@ -94,6 +94,7 @@ export const EditorApp = ({ picker }: { picker: ReactNode }) => {
           title="Signal Sats"
           label="Custom"
           puzzle={playing.puzzle}
+          check={(_state, output) => output === playing.puzzle.answer}
         />
       </>
     );

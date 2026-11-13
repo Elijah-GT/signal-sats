@@ -18,6 +18,7 @@ import type {
   Storm,
 } from './engine/types.ts';
 import { validateBoard } from './engine/validate.ts';
+import type { DayBand } from './puzzle.ts';
 import type { FixedSatellite, TrayPiece, TrayPuzzle } from './tray.ts';
 import { solveTray } from './traySolve.ts';
 
@@ -177,6 +178,15 @@ export type Compiled = {
 };
 
 const WORD = /^[A-Z]{5}$/;
+const BANDS: readonly DayBand[] = [
+  'mon',
+  'tue',
+  'wed',
+  'thu',
+  'fri',
+  'sat',
+  'sun',
+];
 
 /** Checks the level and builds the puzzle players get. */
 export const compileLevel = (level: Level, id = 'level'): Compiled => {
@@ -332,6 +342,14 @@ export const fromCode = (code: string): TrayPuzzle | null => {
   } catch {
     return null;
   }
+  return parsePuzzle(data);
+};
+
+/**
+ * Checks untrusted data is a playable level: the right shape, sizes in range,
+ * and a valid board. Returns null if not. Doesn't check it can be solved.
+ */
+export const parsePuzzle = (data: unknown): TrayPuzzle | null => {
   if (!isRecord(data)) return null;
   const { width, height, source, debris, storms, fixed, pieces } = data;
   const { ciphertext, answer, par, id } = data;
@@ -358,9 +376,10 @@ export const fromCode = (code: string): TrayPuzzle | null => {
   ) {
     return null;
   }
+  const band = BANDS.find((b) => b === data['band']) ?? 'mon';
   const puzzle: TrayPuzzle = {
     id: typeof id === 'string' ? id : 'shared',
-    band: 'mon',
+    band,
     width,
     height,
     source: { side: 'top', index: source['index'] },

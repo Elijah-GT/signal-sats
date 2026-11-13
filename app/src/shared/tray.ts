@@ -39,6 +39,16 @@ export type TrayPuzzle = {
   par: number;
 };
 
+/** A puzzle as players' devices get it: everything but the answer. */
+export type PublicTrayPuzzle = Omit<TrayPuzzle, 'answer'>;
+
+/** The puzzle without its answer, to send to players. */
+export const toPublic = (puzzle: TrayPuzzle): PublicTrayPuzzle => {
+  const { answer, ...rest } = puzzle;
+  void answer;
+  return rest;
+};
+
 export type Placement = { x: number; y: number; angle: Angle };
 
 export type TrayState = {
@@ -58,7 +68,7 @@ export const newTrayGame = (): TrayState => ({
 
 /** The board as the engine sees it: fixed satellites plus everything placed. */
 export const trayBoard = (
-  puzzle: TrayPuzzle,
+  puzzle: PublicTrayPuzzle,
   state: TrayState
 ): { board: Board; settings: Settings } => {
   const satellites: Satellite[] = puzzle.fixed.map(({ id, x, y, op }) => ({
@@ -90,7 +100,7 @@ export const trayBoard = (
 };
 
 export const trayDecode = (
-  puzzle: TrayPuzzle,
+  puzzle: PublicTrayPuzzle,
   state: TrayState
 ): DecodeResult => {
   const { board, settings } = trayBoard(puzzle, state);
@@ -102,7 +112,7 @@ export const isTraySolved = (puzzle: TrayPuzzle, state: TrayState): boolean =>
 
 /** Whether a piece can be put down at `cell`: on the board and empty. */
 export const isFreeCell = (
-  puzzle: TrayPuzzle,
+  puzzle: PublicTrayPuzzle,
   state: TrayState,
   cell: Point
 ): boolean => {
@@ -138,7 +148,7 @@ export const selectPiece = (state: TrayState, pieceId: string): TrayState => {
 
 /** Taps an empty square: puts the picked-up piece there. */
 export const tapCell = (
-  puzzle: TrayPuzzle,
+  puzzle: PublicTrayPuzzle,
   state: TrayState,
   cell: Point
 ): TrayState => {
@@ -180,7 +190,7 @@ export const pieceAt = (state: TrayState, cell: Point): string | undefined =>
  * a storm, a bolted satellite, its own square) changes nothing.
  */
 export const dropPiece = (
-  puzzle: TrayPuzzle,
+  puzzle: PublicTrayPuzzle,
   state: TrayState,
   id: string,
   cell: Point
@@ -199,4 +209,46 @@ export const dropPiece = (
   }
   placed[id] = { x: cell.x, y: cell.y, angle: from?.angle ?? '/' };
   return { placed, selected: null, moves: state.moves + 1 };
+};
+
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/**
+ * Whether `placed` is a layout a player could really have built: only pieces
+ * from the tray, each on its own free square, facing a real angle. The server
+ * checks this before replaying a claimed solve.
+ */
+export const isValidLayout = (
+  puzzle: PublicTrayPuzzle,
+  placed: unknown
+): placed is Record<string, Placement> => {
+  if (!isRecord(placed)) return false;
+  const taken = new Set([
+    ...puzzle.debris.map(pointKey),
+    ...puzzle.storms.map(pointKey),
+    ...puzzle.fixed.map(pointKey),
+  ]);
+  for (const [id, p] of Object.entries(placed)) {
+    if (!puzzle.pieces.some((piece) => piece.id === id)) return false;
+    if (!isRecord(p)) return false;
+    const { x, y, angle } = p;
+    if (
+      typeof x !== 'number' ||
+      typeof y !== 'number' ||
+      !Number.isInteger(x) ||
+      !Number.isInteger(y) ||
+      x < 0 ||
+      y < 0 ||
+      x >= puzzle.width ||
+      y >= puzzle.height ||
+      (angle !== '/' && angle !== '\\')
+    ) {
+      return false;
+    }
+    const key = pointKey({ x, y });
+    if (taken.has(key)) return false;
+    taken.add(key);
+  }
+  return true;
 };

@@ -1,93 +1,177 @@
-import { Hono } from 'hono';
-import { context, redis, reddit } from '@devvit/web/server';
+import { Hono, type Context } from 'hono';
+import type { ContentfulStatusCode } from 'hono/utils/http-status';
+import { context } from '@devvit/web/server';
 import type {
-  DecrementResponse,
-  IncrementResponse,
+  CheckResponse,
+  ErrorResponse,
   InitResponse,
+  MyResult,
+  PostLevelResponse,
+  SignalPostData,
 } from '../../shared/api';
+import { currentStreak, dayOf, extendStreak } from '../../shared/daily';
+import { parsePuzzle } from '../../shared/level';
+import type { DayBand } from '../../shared/puzzle';
+import { isValidLayout, toPublic, trayDecode } from '../../shared/tray';
+import { solveTray } from '../../shared/traySolve';
+import { createLevelPost, postUrl } from '../core/post';
+import {
+  loadPuzzle,
+  loadResult,
+  loadStats,
+  loadStreak,
+  markSeen,
+  onCooldown,
+  saveResult,
+  saveStreak,
+  startCooldown,
+} from '../core/store';
 
-type ErrorResponse = {
-  status: 'error';
-  message: string;
-};
+/** How long a player waits between posting levels, in seconds. */
+const LEVEL_COOLDOWN = 60;
+const MAX_MOVES = 999;
+const BANDS: readonly DayBand[] = [
+  'mon',
+  'tue',
+  'wed',
+  'thu',
+  'fri',
+  'sat',
+  'sun',
+];
 
 export const api = new Hono();
 
-api.get('/init', async (c) => {
-  const { postId } = context;
+const fail = (c: Context, message: string, status: ContentfulStatusCode) =>
+  c.json<ErrorResponse>({ status: 'error', message }, status);
 
-  if (!postId) {
-    console.error('API Init Error: postId not found in devvit context');
-    return c.json<ErrorResponse>(
-      {
-        status: 'error',
-        message: 'postId is required but missing from context',
-      },
-      400
-    );
+const isRecord = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
+/** The post's public data, or a safe default for posts made before it existed. */
+const readPostData = (): SignalPostData => {
+  const d = context.postData;
+  const band = BANDS.find((b) => isRecord(d) && b === d['band']) ?? 'mon';
+  if (!isRecord(d)) {
+    return { kind: 'custom', number: 0, date: '', band, author: '' };
   }
+  return {
+    kind: d['kind'] === 'daily' ? 'daily' : 'custom',
+    number: typeof d['number'] === 'number' ? d['number'] : 0,
+    date: typeof d['date'] === 'string' ? d['date'] : '',
+    band,
+    author: typeof d['author'] === 'string' ? d['author'] : '',
+  };
+};
 
+const readBody = async (c: Context): Promise<unknown> => {
   try {
-    const [count, username] = await Promise.all([
-      redis.get('count'),
-      reddit.getCurrentUsername(),
-    ]);
+    return await c.req.json();
+  } catch {
+    return null;
+  }
+};
 
-    return c.json<InitResponse>({
-      type: 'init',
-      postId: postId,
-      count: count ? parseInt(count) : 0,
-      username: username ?? 'anonymous',
-    });
-  } catch (error) {
-    console.error(`API Init Error for post ${postId}:`, error);
-    let errorMessage = 'Unknown error during initialization';
-    if (error instanceof Error) {
-      errorMessage = `Initialization failed: ${error.message}`;
+api.get('/init', async (c) => {
+  const { postId, userId } = context;
+  if (!postId) return fail(c, 'Open this from a Signal Sats post.', 400);
+  const puzzle = await loadPuzzle(postId);
+  if (!puzzle) return fail(c, 'This post has no puzzle.', 404);
+
+  if (userId) await markSeen(postId, userId);
+  const [mine, stats, streak] = await Promise.all([
+    userId ? loadResult(postId, userId) : Promise.resolve(null),
+    loadStats(postId),
+    userId ? loadStreak(userId) : Promise.resolve(null),
+  ]);
+  return c.json<InitResponse>({
+    type: 'init',
+    postId,
+    post: readPostData(),
+    puzzle: toPublic(puzzle),
+    mine,
+    stats,
+    streak: currentStreak(streak, dayOf(new Date())),
+    username: context.username ?? null,
+  });
+});
+
+/**
+ * Checks a layout by running the beam on the server, so a solve can't be
+ * faked. A first solve is counted, and today's daily extends the streak.
+ */
+api.post('/check', async (c) => {
+  const { postId, userId } = context;
+  if (!postId) return fail(c, 'Open this from a Signal Sats post.', 400);
+  const puzzle = await loadPuzzle(postId);
+  if (!puzzle) return fail(c, 'This post has no puzzle.', 404);
+
+  const body = await readBody(c);
+  const placed = isRecord(body) ? body['placed'] : null;
+  if (!isRecord(body) || !isValidLayout(puzzle, placed)) {
+    return fail(c, "That layout isn't possible on this board.", 400);
+  }
+  const { output } = trayDecode(puzzle, { placed, selected: null, moves: 0 });
+  if (output !== puzzle.answer) {
+    return c.json<CheckResponse>({ type: 'check', correct: false });
+  }
+
+  // Moves can't be replayed, so take the player's count, but never fewer
+  // than the pieces on the board.
+  const claimed = body['moves'];
+  const moves = Math.min(
+    MAX_MOVES,
+    Math.max(
+      typeof claimed === 'number' && Number.isInteger(claimed) ? claimed : 0,
+      Object.keys(placed).length
+    )
+  );
+  let result: MyResult = { moves, word: puzzle.answer };
+  let streak = 0;
+  if (userId) {
+    const first = await saveResult(postId, userId, result, puzzle.par);
+    if (!first) result = (await loadResult(postId, userId)) ?? result;
+    const today = dayOf(new Date());
+    let saved = await loadStreak(userId);
+    const post = readPostData();
+    if (first && post.kind === 'daily' && post.date === today) {
+      saved = extendStreak(saved, today);
+      await saveStreak(userId, saved);
     }
-    return c.json<ErrorResponse>(
-      { status: 'error', message: errorMessage },
-      400
-    );
+    streak = currentStreak(saved, today);
   }
-});
-
-api.post('/increment', async (c) => {
-  const { postId } = context;
-  if (!postId) {
-    return c.json<ErrorResponse>(
-      {
-        status: 'error',
-        message: 'postId is required',
-      },
-      400
-    );
-  }
-
-  const count = await redis.incrBy('count', 1);
-  return c.json<IncrementResponse>({
-    count,
-    postId,
-    type: 'increment',
+  return c.json<CheckResponse>({
+    type: 'check',
+    correct: true,
+    result,
+    stats: await loadStats(postId),
+    streak,
   });
 });
 
-api.post('/decrement', async (c) => {
-  const { postId } = context;
-  if (!postId) {
-    return c.json<ErrorResponse>(
-      {
-        status: 'error',
-        message: 'postId is required',
-      },
-      400
-    );
+/** Posts a level made in the editor, once the server has checked it. */
+api.post('/level', async (c) => {
+  const { userId, username } = context;
+  if (!userId || !username) return fail(c, 'Log in to post a level.', 401);
+  if (await onCooldown(userId)) {
+    return fail(c, 'You just posted a level. Try again in a minute.', 429);
   }
-
-  const count = await redis.incrBy('count', -1);
-  return c.json<DecrementResponse>({
-    count,
-    postId,
-    type: 'decrement',
-  });
+  const body = await readBody(c);
+  const puzzle = parsePuzzle(isRecord(body) ? body['puzzle'] : null);
+  if (!puzzle || puzzle.pieces.length === 0) {
+    return fail(c, "That level isn't valid.", 400);
+  }
+  if (puzzle.ciphertext === puzzle.answer) {
+    return fail(c, 'That signal is already unscrambled.', 400);
+  }
+  const report = solveTray(puzzle);
+  if (report.orders.length === 0 || report.par === 0) {
+    return fail(c, "That level can't be solved with its satellites.", 400);
+  }
+  await startCooldown(userId, LEVEL_COOLDOWN);
+  const postId = await createLevelPost(
+    { ...puzzle, par: report.par },
+    username
+  );
+  return c.json<PostLevelResponse>({ type: 'level', url: postUrl(postId) });
 });

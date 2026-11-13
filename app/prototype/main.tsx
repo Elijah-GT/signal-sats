@@ -178,6 +178,7 @@ const TrayApp = ({ picker, add, puzzles }: TrayAppProps) => {
         key={`${puzzle.id}-${run}`}
         title={TITLE}
         puzzle={puzzle}
+        check={(_state, output) => output === puzzle.answer}
         onChange={onChange}
         onSolved={onSolved}
       />
@@ -274,6 +275,7 @@ const PracticeApp = ({ picker, add }: AppProps) => {
         title={TITLE}
         label={capital(difficulty)}
         puzzle={puzzle}
+        check={(_state, output) => output === puzzle.answer}
         onChange={onChange}
         onSolved={onSolved}
       />

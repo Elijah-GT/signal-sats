@@ -14,7 +14,7 @@
     "prettier": "prettier --write .",
     "test:types": "tsc --build",
     "test:unit": "node --experimental-strip-types --no-warnings=ExperimentalWarning --test \"tests/**/*.test.ts\"",
-    "test:coverage": "node --experimental-strip-types --no-warnings=ExperimentalWarning --experimental-test-coverage --test-coverage-include=\"src/shared/engine/**\" --test-coverage-include=\"scripts/lib/**\" --test-coverage-include=\"src/shared/rng.ts\" --test-coverage-include=\"src/shared/tray*.ts\" --test-coverage-include=\"src/shared/level.ts\" --test-coverage-lines=90 --test-coverage-branches=90 --test \"tests/**/*.test.ts\"",
+    "test:coverage": "node --experimental-strip-types --no-warnings=ExperimentalWarning --experimental-test-coverage --test-coverage-include=\"src/shared/engine/**\" --test-coverage-include=\"scripts/lib/**\" --test-coverage-include=\"src/shared/rng.ts\" --test-coverage-include=\"src/shared/tray*.ts\" --test-coverage-include=\"src/shared/level.ts\" --test-coverage-include=\"src/shared/daily.ts\" --test-coverage-lines=90 --test-coverage-branches=90 --test \"tests/**/*.test.ts\"",
     "puzzles:generate": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/generate.ts",
     "puzzles:preview": "node --experimental-strip-types --no-warnings=ExperimentalWarning scripts/preview.ts",
     "prototype": "vite --config vite.prototype.config.ts",

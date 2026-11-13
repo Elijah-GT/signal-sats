@@ -10,6 +10,7 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type ReactNode,
 } from 'react';
 import { applyOp, opName, permute } from '../../shared/engine/cipher';
 import type { CipherOp, Point } from '../../shared/engine/types';
@@ -24,7 +25,7 @@ import {
   tapSatellite,
   trayBoard,
   trayDecode,
-  type TrayPuzzle,
+  type PublicTrayPuzzle,
   type TrayState,
 } from '../../shared/tray';
 import { Board } from './Board';
@@ -34,9 +35,17 @@ import { SlidingTiles, Tiles, type TileTone } from './Tiles';
 
 type TrayViewProps = {
   title: string;
-  puzzle: TrayPuzzle;
+  /** The puzzle without its answer: whether a word is right comes from `check`. */
+  puzzle: PublicTrayPuzzle;
+  /**
+   * Whether the word the beam lands in the dish is the answer. Called once per
+   * new word; may ask the server. A rejected promise is retried next time.
+   */
+  check: (state: TrayState, output: string) => boolean | Promise<boolean>;
   /** The sticker by the title, e.g. "Hard" in practice. Defaults to the day. */
   label?: string;
+  /** More to show on the result card, like a streak. */
+  resultExtra?: ReactNode;
   onChange?: (state: TrayState) => void;
   onSolved?: (state: TrayState) => void;
 };
@@ -94,7 +103,9 @@ const shareLine = (title: string, day: string, moves: number, par: number) => {
 export const TrayView = ({
   title,
   puzzle,
+  check,
   label,
+  resultExtra,
   onChange,
   onSolved,
 }: TrayViewProps) => {
@@ -105,8 +116,23 @@ export const TrayView = ({
     () => trayBoard(puzzle, state),
     [puzzle, state]
   );
-  const solved = current.output === puzzle.answer;
+  // The decoded word, once `check` confirms it.
+  const [word, setWord] = useState<string | null>(null);
+  const solved = word !== null;
   const reported = useRef(false);
+
+  // Ask about each new word that reaches the dish, once.
+  const asked = useRef(new Set<string>());
+  const output = current.output;
+  useEffect(() => {
+    if (solved || output === null || asked.current.has(output)) return;
+    asked.current.add(output);
+    Promise.resolve(check(state, output))
+      .then((ok) => {
+        if (ok) setWord(output);
+      })
+      .catch(() => asked.current.delete(output));
+  }, [output, solved, check, state]);
 
   // Dragging: a press on a piece becomes a drag once the pointer moves. On
   // release the piece drops on the square underneath (see dropPiece).
@@ -335,12 +361,13 @@ export const TrayView = ({
       {solved ? (
         <section className="sg-card sg-result" aria-live="polite">
           <h2 className="sg-result-title">Signal decoded!</h2>
-          <Tiles text={puzzle.answer} tone="right" label="Decoded word" />
+          <Tiles text={word} tone="right" label="Decoded word" />
           <p>
             {state.moves <= puzzle.par
               ? `${state.moves} moves. That's par: a perfect build!`
               : `${state.moves} moves. Par was ${puzzle.par}.`}
           </p>
+          {resultExtra}
           <pre className="sg-share">{share}</pre>
           <button
             className="sg-button sg-button--quiet"

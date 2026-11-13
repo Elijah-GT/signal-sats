@@ -29,8 +29,14 @@ type LevelEditorProps = {
   initial: Level;
   /** Play the level as players will see it. */
   onPlay: (puzzle: TrayPuzzle, level: Level) => void;
-  /** Keep the level in the maker's list. */
+  /** Keep the level, or post it. */
   onSave: (puzzle: TrayPuzzle, level: Level) => void;
+  /** The save button's label, e.g. "Post it". */
+  saveLabel?: string;
+  /** Offer a share code to copy. */
+  share?: boolean;
+  /** Called with every change, so a parent can keep the draft. */
+  onChange?: (level: Level) => void;
 };
 
 type ToolKey =
@@ -54,7 +60,14 @@ const PLACEHOLDER = '·····';
  * The level editor. The maker builds the solution: satellites where they go,
  * mirrors turned the right way. The signal players get is worked out from it.
  */
-export const LevelEditor = ({ initial, onPlay, onSave }: LevelEditorProps) => {
+export const LevelEditor = ({
+  initial,
+  onPlay,
+  onSave,
+  saveLabel = 'Save',
+  share = true,
+  onChange,
+}: LevelEditorProps) => {
   const [level, setLevel] = useState(initial);
   const [toolKey, setToolKey] = useState<ToolKey>('swap');
   const [swapA, setSwapA] = useState(1);
@@ -99,6 +112,7 @@ export const LevelEditor = ({ initial, onPlay, onSave }: LevelEditorProps) => {
   // Any change to the level makes the old rating and code out of date.
   const change = (next: Level) => {
     setLevel(next);
+    onChange?.(next);
     setRating(null);
     setCode(null);
     setCopied(false);
@@ -327,24 +341,26 @@ export const LevelEditor = ({ initial, onPlay, onSave }: LevelEditorProps) => {
               if (puzzle) onSave(puzzle, level);
             }}
           >
-            Save
+            {saveLabel}
           </button>
-          <button
-            className="sg-button sg-button--quiet"
-            disabled={!ready}
-            onClick={() => {
-              const puzzle = finished();
-              if (!puzzle) return;
-              const text = toCode(puzzle);
-              setCode(text);
-              navigator.clipboard
-                .writeText(text)
-                .then(() => setCopied(true))
-                .catch(() => setCopied(false));
-            }}
-          >
-            {copied ? 'Code copied' : 'Share code'}
-          </button>
+          {share && (
+            <button
+              className="sg-button sg-button--quiet"
+              disabled={!ready}
+              onClick={() => {
+                const puzzle = finished();
+                if (!puzzle) return;
+                const text = toCode(puzzle);
+                setCode(text);
+                navigator.clipboard
+                  .writeText(text)
+                  .then(() => setCopied(true))
+                  .catch(() => setCopied(false));
+              }}
+            >
+              {copied ? 'Code copied' : 'Share code'}
+            </button>
+          )}
         </div>
         {code && (
           <input
