@@ -1,0 +1,128 @@
+[
+  {
+    "id": "tray-mon",
+    "band": "mon",
+    "width": 4,
+    "height": 4,
+    "source": {
+      "side": "top",
+      "index": 1
+    },
+    "debris": [],
+    "fixed": [],
+    "pieces": [
+      {
+        "id": "A",
+        "swap": [2, 5]
+      },
+      {
+        "id": "B",
+        "swap": [4, 5]
+      },
+      {
+        "id": "C",
+        "swap": [1, 3]
+      }
+    ],
+    "answer": "PROBE",
+    "intended": ["A", "B"]
+  },
+  {
+    "id": "tray-wed",
+    "band": "wed",
+    "width": 5,
+    "height": 5,
+    "source": {
+      "side": "top",
+      "index": 3
+    },
+    "debris": [
+      {
+        "x": 1,
+        "y": 1
+      }
+    ],
+    "fixed": [
+      {
+        "id": "F",
+        "x": 2,
+        "y": 2,
+        "angle": "/",
+        "swap": [2, 4]
+      }
+    ],
+    "pieces": [
+      {
+        "id": "A",
+        "swap": [1, 4]
+      },
+      {
+        "id": "B",
+        "swap": [4, 5]
+      },
+      {
+        "id": "C",
+        "swap": [3, 5]
+      },
+      {
+        "id": "D",
+        "swap": [1, 3]
+      }
+    ],
+    "answer": "RADIO",
+    "intended": ["A", "F", "B", "C"]
+  },
+  {
+    "id": "tray-sun",
+    "band": "sun",
+    "width": 5,
+    "height": 6,
+    "source": {
+      "side": "top",
+      "index": 0
+    },
+    "debris": [
+      {
+        "x": 0,
+        "y": 4
+      },
+      {
+        "x": 2,
+        "y": 4
+      },
+      {
+        "x": 4,
+        "y": 4
+      }
+    ],
+    "fixed": [
+      {
+        "id": "F",
+        "x": 3,
+        "y": 2,
+        "angle": "/",
+        "swap": [3, 5]
+      }
+    ],
+    "pieces": [
+      {
+        "id": "A",
+        "swap": [3, 4]
+      },
+      {
+        "id": "B",
+        "swap": [2, 5]
+      },
+      {
+        "id": "C",
+        "swap": [2, 4]
+      },
+      {
+        "id": "D",
+        "swap": [1, 5]
+      }
+    ],
+    "answer": "VOICE",
+    "intended": ["A", "F", "B", "C"]
+  }
+]

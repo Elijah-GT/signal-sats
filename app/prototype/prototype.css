@@ -5,8 +5,8 @@
 html,
 body {
   margin: 0;
-  background: #070b1a;
-  color: #e8edff;
+  background: #120c2c;
+  color: #fff4e3;
   font:
     15px/1.45 system-ui,
     -apple-system,
@@ -33,10 +33,10 @@ body {
 .pt-bar button {
   font: inherit;
   font-size: 14px;
-  color: #e8edff;
-  background: #16204a;
-  border: 1px solid #253163;
-  border-radius: 8px;
+  color: #fff4e3;
+  background: #1c1442;
+  border: 1px solid #3d3184;
+  border-radius: 0;
   padding: 6px 10px;
 }
 .pt-bar button {

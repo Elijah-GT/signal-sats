@@ -7,8 +7,12 @@ export const LAYOUT = {
   pad: 14,
   /** Space above the grid for the incoming signal. */
   top: 40,
-  /** Space below the grid for Earth. */
-  bottom: 50,
+  /** Space below the grid for Earth and the radar dish. */
+  bottom: 72,
+  /** How far below the grid the dish's feed horn sits. The beam ends there. */
+  dishFocus: 14,
+  /** How far below the grid the ground starts. */
+  ground: 46,
 } as const;
 
 export const boardSize = (board: Board): { width: number; height: number } => ({
@@ -48,7 +52,7 @@ export const beamPoints = (board: Board, trace: Trace): Point[] => {
     const debris = cellCentre(end.at);
     points.push({ x: (from.x + debris.x) / 2, y: (from.y + debris.y) / 2 });
   } else if (end.kind === 'received') {
-    points.push(portPoint(board, end.port, LAYOUT.bottom / 2));
+    points.push(portPoint(board, end.port, LAYOUT.dishFocus));
   } else {
     points.push(portPoint(board, end.port, LAYOUT.pad));
   }

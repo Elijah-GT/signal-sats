@@ -1,0 +1,161 @@
+// The tray version of the game: the player places satellites from a tray onto
+// the board, so the beam visits them in an order that unscrambles the word.
+
+import { decode, type DecodeResult } from './engine/decode.ts';
+import { pointKey } from './engine/grid.ts';
+import type {
+  Angle,
+  Board,
+  CipherOp,
+  Point,
+  Port,
+  Satellite,
+  Settings,
+} from './engine/types.ts';
+import type { DayBand } from './puzzle.ts';
+
+/** A satellite waiting in the tray. */
+export type TrayPiece = { id: string; op: CipherOp };
+
+/** A satellite already on the board that the player can't move or turn. */
+export type FixedSatellite = Satellite & { angle: Angle };
+
+export type TrayPuzzle = {
+  id: string;
+  band: DayBand;
+  width: number;
+  height: number;
+  source: Port;
+  debris: readonly Point[];
+  fixed: readonly FixedSatellite[];
+  pieces: readonly TrayPiece[];
+  ciphertext: string;
+  /** In the real app this stays on the server. */
+  answer: string;
+  /** Fewest moves that solve it: one per piece placed, one more per mirror turned. */
+  par: number;
+};
+
+export type Placement = { x: number; y: number; angle: Angle };
+
+export type TrayState = {
+  /** Where each placed piece sits, by piece id. Pieces not listed are in the tray. */
+  placed: Readonly<Record<string, Placement>>;
+  /** The tray piece about to be placed, if any. */
+  selected: string | null;
+  /** Placements and turns, for the score. */
+  moves: number;
+};
+
+export const newTrayGame = (): TrayState => ({
+  placed: {},
+  selected: null,
+  moves: 0,
+});
+
+/** The board as the engine sees it: fixed satellites plus everything placed. */
+export const trayBoard = (
+  puzzle: TrayPuzzle,
+  state: TrayState
+): { board: Board; settings: Settings } => {
+  const satellites: Satellite[] = puzzle.fixed.map(({ id, x, y, op }) => ({
+    id,
+    x,
+    y,
+    op,
+  }));
+  const settings: Record<string, Angle> = {};
+  for (const f of puzzle.fixed) settings[f.id] = f.angle;
+  for (const piece of puzzle.pieces) {
+    const at = state.placed[piece.id];
+    if (!at) continue;
+    satellites.push({ id: piece.id, x: at.x, y: at.y, op: piece.op });
+    settings[piece.id] = at.angle;
+  }
+  return {
+    board: {
+      width: puzzle.width,
+      height: puzzle.height,
+      source: puzzle.source,
+      receiver: { side: 'bottom', from: 0, to: puzzle.width - 1 },
+      satellites,
+      debris: puzzle.debris,
+    },
+    settings,
+  };
+};
+
+export const trayDecode = (
+  puzzle: TrayPuzzle,
+  state: TrayState
+): DecodeResult => {
+  const { board, settings } = trayBoard(puzzle, state);
+  return decode(board, settings, puzzle.ciphertext);
+};
+
+export const isTraySolved = (puzzle: TrayPuzzle, state: TrayState): boolean =>
+  trayDecode(puzzle, state).output === puzzle.answer;
+
+/** Whether a piece can be put down at `cell`: on the board and empty. */
+export const isFreeCell = (
+  puzzle: TrayPuzzle,
+  state: TrayState,
+  cell: Point
+): boolean => {
+  if (
+    cell.x < 0 ||
+    cell.y < 0 ||
+    cell.x >= puzzle.width ||
+    cell.y >= puzzle.height
+  ) {
+    return false;
+  }
+  const taken = new Set([
+    ...puzzle.debris.map(pointKey),
+    ...puzzle.fixed.map(pointKey),
+    ...Object.values(state.placed).map(pointKey),
+  ]);
+  return !taken.has(pointKey(cell));
+};
+
+/**
+ * Taps a piece in the tray. A piece on the board comes back to the tray and is
+ * picked up; tapping the picked-up piece again puts it down.
+ */
+export const selectPiece = (state: TrayState, pieceId: string): TrayState => {
+  if (state.placed[pieceId]) {
+    const placed = { ...state.placed };
+    delete placed[pieceId];
+    return { ...state, placed, selected: pieceId };
+  }
+  return { ...state, selected: state.selected === pieceId ? null : pieceId };
+};
+
+/** Taps an empty square: puts the picked-up piece there. */
+export const tapCell = (
+  puzzle: TrayPuzzle,
+  state: TrayState,
+  cell: Point
+): TrayState => {
+  const { selected } = state;
+  if (selected === null || !isFreeCell(puzzle, state, cell)) return state;
+  return {
+    placed: { ...state.placed, [selected]: { ...cell, angle: '/' } },
+    selected: null,
+    moves: state.moves + 1,
+  };
+};
+
+/** Taps a satellite on the board: turns its mirror, unless it's fixed. */
+export const tapSatellite = (state: TrayState, id: string): TrayState => {
+  const at = state.placed[id];
+  if (!at) return state;
+  return {
+    ...state,
+    placed: {
+      ...state.placed,
+      [id]: { ...at, angle: at.angle === '/' ? '\\' : '/' },
+    },
+    moves: state.moves + 1,
+  };
+};

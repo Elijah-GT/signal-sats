@@ -52,6 +52,17 @@ export const validateBoard = (board: Board): string[] => {
     ) {
       errors.push(`${label} has a shift amount outside 1–25`);
     }
+    if (
+      op.kind === 'trade' &&
+      !(
+        Number.isInteger(op.a) &&
+        Number.isInteger(op.b) &&
+        0 <= op.a &&
+        op.a < op.b
+      )
+    ) {
+      errors.push(`${label} must swap two different letter positions`);
+    }
   }
   board.debris.forEach((d, i) => place(d, `Debris ${i + 1}`));
   return errors;

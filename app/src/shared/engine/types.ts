@@ -23,7 +23,9 @@ export type CipherOp =
   | { kind: 'swap' }
   | { kind: 'rotate' }
   | { kind: 'shift'; amount: number }
-  | { kind: 'mirror' };
+  | { kind: 'mirror' }
+  /** Swaps the letters at positions `a` and `b` (0-based, `a < b`). */
+  | { kind: 'trade'; a: number; b: number };
 
 export type Satellite = { id: string; x: number; y: number; op: CipherOp };
 

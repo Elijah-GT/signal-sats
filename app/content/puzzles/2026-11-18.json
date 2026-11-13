@@ -7,7 +7,7 @@
     "height": 6,
     "source": {
       "side": "top",
-      "index": 1
+      "index": 3
     },
     "receiver": {
       "side": "bottom",
@@ -17,61 +17,71 @@
     "satellites": [
       {
         "id": "A",
-        "x": 0,
-        "y": 2,
+        "x": 3,
+        "y": 1,
         "op": {
-          "kind": "swap"
+          "kind": "trade",
+          "a": 2,
+          "b": 4
         }
       },
       {
         "id": "B",
-        "x": 1,
-        "y": 0,
+        "x": 4,
+        "y": 1,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 1,
+          "b": 2
         }
       },
       {
         "id": "C",
         "x": 3,
-        "y": 0,
+        "y": 5,
         "op": {
-          "kind": "swap"
+          "kind": "trade",
+          "a": 0,
+          "b": 1
         }
       },
       {
         "id": "D",
-        "x": 1,
-        "y": 2,
+        "x": 2,
+        "y": 5,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 2,
+          "b": 4
         }
       },
       {
         "id": "E",
-        "x": 0,
-        "y": 0,
+        "x": 2,
+        "y": 1,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 0,
+          "b": 1
         }
       }
     ],
     "debris": []
   },
-  "ciphertext": "ODIRA",
+  "ciphertext": "RDOIA",
   "start": {
-    "A": "\\",
+    "A": "/",
     "B": "/",
-    "C": "/",
-    "D": "/",
+    "C": "\\",
+    "D": "\\",
     "E": "/"
   },
   "answer": "RADIO",
   "solution": {
-    "A": "/",
+    "A": "\\",
     "B": "\\",
-    "C": "\\",
-    "D": "/",
+    "C": "/",
+    "D": "\\",
     "E": "\\"
   },
   "stats": {
@@ -81,8 +91,7 @@
     "routes": 3,
     "minTaps": 2,
     "opKinds": [
-      "reverse",
-      "swap"
+      "trade"
     ]
   }
 }

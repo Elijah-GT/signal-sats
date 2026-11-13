@@ -7,7 +7,7 @@
     "height": 6,
     "source": {
       "side": "top",
-      "index": 3
+      "index": 1
     },
     "receiver": {
       "side": "bottom",
@@ -17,34 +17,40 @@
     "satellites": [
       {
         "id": "A",
-        "x": 3,
+        "x": 1,
         "y": 0,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "B",
-        "x": 4,
+        "x": 3,
         "y": 0,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 1,
+          "b": 3
         }
       },
       {
         "id": "C",
-        "x": 1,
+        "x": 0,
         "y": 0,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 2,
+          "b": 3
         }
       }
     ],
     "debris": []
   },
-  "ciphertext": "BORPE",
+  "ciphertext": "PBOER",
   "start": {
-    "A": "\\",
+    "A": "/",
     "B": "/",
     "C": "\\"
   },
@@ -52,17 +58,16 @@
   "solution": {
     "A": "\\",
     "B": "\\",
-    "C": "\\"
+    "C": "/"
   },
   "stats": {
     "satellites": 3,
     "pathLength": 2,
     "reachingSettings": 4,
     "routes": 2,
-    "minTaps": 1,
+    "minTaps": 2,
     "opKinds": [
-      "reverse",
-      "rotate"
+      "trade"
     ]
   }
 }

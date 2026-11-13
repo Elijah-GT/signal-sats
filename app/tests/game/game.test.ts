@@ -8,6 +8,7 @@ import {
   preview,
   recordTransmission,
   scoredTriesLeft,
+  parShareText,
   shareText,
   solvedOn,
   tap,
@@ -114,6 +115,28 @@ describe('a game', () => {
       first?.steps.map((s) => s.satelliteId),
       ['R', 'T']
     );
+  });
+});
+
+describe('parShareText', () => {
+  test('shows taps against par, with a star for hitting par', () => {
+    assert.equal(
+      parShareText('Signal Sats', '2026-11-16', 2, 2),
+      'Signal Sats 2026-11-16 · 2 taps (par 2) ⭐\n🛰🛰📡'
+    );
+    assert.equal(parShareText('S', 'd', 1, 1), 'S d · 1 tap (par 1) ⭐\n🛰📡');
+    assert.equal(parShareText('S', 'd', 4, 2), 'S d · 4 taps (par 2)\n🛰🛰🛰🛰📡');
+  });
+
+  test('caps the row of satellites on long games', () => {
+    const text = parShareText('S', 'd', 30, 3);
+    assert.ok(text.endsWith('🛰'.repeat(12) + '…📡'));
+  });
+});
+
+describe('toClientPuzzle par', () => {
+  test('is the fewest taps from the start', () => {
+    assert.equal(client.par, puzzle.stats.minTaps);
   });
 });
 

@@ -9,5 +9,10 @@ export default defineConfig({
   base: './',
   plugins: [react()],
   server: { port: 5174, strictPort: true },
-  build: { outDir: '../dist/prototype', emptyOutDir: true },
+  // Inline the fonts too, so the single-file artifact page needs nothing else.
+  build: {
+    outDir: '../dist/prototype',
+    emptyOutDir: true,
+    assetsInlineLimit: 100_000,
+  },
 });

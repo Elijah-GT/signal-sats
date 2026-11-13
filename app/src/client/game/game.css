@@ -1,39 +1,38 @@
-/* Signal Sats game styles. Mission-control look: deep space, amber beam. */
+/* Signal Sats. Pixel-art night sky, Reddit orangered signal, chunky
+   toy-like controls with hard shadows instead of soft glows. */
 
 .sg {
-  --sg-bg: #070b1a;
-  --sg-panel: #0f1630;
-  --sg-panel-2: #16204a;
-  --sg-line: #253163;
-  --sg-ink: #e8edff;
-  --sg-dim: #93a0cf;
-  --sg-beam: #ffb23e;
-  --sg-beam-glow: #ffb23e66;
-  --sg-lost: #ff6b6b;
-  --sg-right: #4ade9a;
-  --sg-wrong: #ff8a6b;
-  --sg-sat: #24336e;
-  --sg-sat-lit: #3b4fa3;
-  --sg-mirror: #d6defc;
-  --sg-earth: #1d6b57;
-  --sg-earth-top: #2f9a7c;
-  --sg-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --sg-night: #120c2c;
+  --sg-night-2: #1c1442;
+  --sg-card: #221a52;
+  --sg-edge: #0a0619;
+  --sg-line: #3d3184;
+  --sg-ink: #fff4e3;
+  --sg-dim: #a99ad8;
+  --sg-signal: #ff4500;
+  --sg-signal-dark: #a32c00;
+  --sg-hot: #ffd23f;
+  --sg-good: #7dff6a;
+  --sg-bad: #ff5d73;
+  --sg-cream: #f6ead4;
+  --sg-panel: #4d7cff;
+  --sg-panel-dark: #2b4cc4;
+  --sg-lcd: #0d2414;
+  --sg-lcd-ink: #7dff6a;
+  --sg-pixel: 'Silkscreen', ui-monospace, monospace;
+  --sg-body: 'Reddit Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
   box-sizing: border-box;
   min-height: 100%;
   margin: 0 auto;
   max-width: 460px;
-  padding: 8px 16px 16px;
+  padding: 10px 16px 20px;
   color: var(--sg-ink);
-  background: var(--sg-bg);
-  font:
-    15px/1.45 system-ui,
-    -apple-system,
-    'Segoe UI',
-    sans-serif;
+  background: var(--sg-night);
+  font: 15px/1.45 var(--sg-body);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .sg *,
 .sg *::before,
@@ -41,112 +40,123 @@
   box-sizing: inherit;
 }
 
-/* Header */
+/* Header: logo, day sticker, and three signal bars for the tries. */
 .sg-head {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .sg-title {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  white-space: nowrap;
+  font: 700 17px/1 var(--sg-pixel);
+  color: var(--sg-signal);
+  text-shadow: 2px 2px 0 var(--sg-edge);
 }
-.sg-sub {
-  margin: 0;
-  color: var(--sg-dim);
-  font-size: 13px;
+.sg-day {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 7px;
+  font: 700 13px/1 var(--sg-pixel);
+  color: var(--sg-night);
+  background: var(--sg-hot);
+  box-shadow: 0 2px 0 var(--sg-edge);
+  transform: rotate(-3deg);
 }
 .sg-pips {
-  display: inline-flex;
-  gap: 3px;
-  margin-left: 6px;
-  vertical-align: middle;
+  display: none;
+  gap: 2px;
 }
 .sg-pip {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--sg-line);
+  width: 4px;
+  height: 4px;
+  background: #00000033;
 }
 .sg-pip--on {
-  background: var(--sg-beam);
+  background: var(--sg-night);
 }
-
-/* Transmission markers */
 .sg-tries {
   display: flex;
-  gap: 6px;
-  list-style: none;
-  margin: 0;
+  align-items: flex-end;
+  gap: 3px;
+  margin: 0 0 0 auto;
   padding: 0;
+  list-style: none;
+  height: 22px;
 }
 .sg-try {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 2px solid var(--sg-line);
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  font-weight: 700;
-}
-.sg-try--miss {
-  border-color: var(--sg-wrong);
-  color: var(--sg-wrong);
+  width: 7px;
+  background: var(--sg-line);
 }
 .sg-try--hit {
-  border-color: var(--sg-right);
-  background: var(--sg-right);
-  color: var(--sg-bg);
+  background: var(--sg-good);
+}
+.sg-try--miss {
+  background: var(--sg-bad);
+  opacity: 0.55;
 }
 
 /* Letter tiles */
-.sg-signal {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-.sg-label {
-  color: var(--sg-dim);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  min-width: 64px;
-  text-align: right;
-}
 .sg-tiles {
   display: flex;
+  justify-content: center;
   gap: 6px;
 }
 .sg-tile {
-  width: 36px;
-  height: 40px;
-  border-radius: 8px;
+  width: 40px;
+  height: 44px;
   display: grid;
   place-items: center;
-  font: 700 20px var(--sg-mono);
-  background: var(--sg-panel-2);
-  border: 1px solid var(--sg-line);
+  font: 700 22px/1 var(--sg-pixel);
 }
-.sg-tiles--incoming .sg-tile {
-  color: var(--sg-beam);
+
+/* The incoming signal: hot orange keycaps. */
+.sg-incoming .sg-tile {
+  color: var(--sg-ink);
+  background: var(--sg-signal);
+  box-shadow:
+    inset 0 -4px 0 var(--sg-signal-dark),
+    0 3px 0 var(--sg-edge);
 }
-.sg-tiles--idle .sg-tile,
-.sg-tiles--lost .sg-tile {
-  color: var(--sg-dim);
+
+/* The receiver: a green screen under the dish. */
+.sg-receiver {
+  margin: -10px auto 0;
+  padding: 8px 12px;
+  background: var(--sg-lcd);
+  border: 3px solid #4d4a5e;
+  border-top-color: #6e6a86;
+  box-shadow: 0 3px 0 var(--sg-edge);
 }
-.sg-tiles--wrong .sg-tile {
-  border-color: var(--sg-wrong);
-  color: var(--sg-wrong);
+.sg-receiver .sg-tile {
+  width: 36px;
+  height: 40px;
+  color: var(--sg-lcd-ink);
+  text-shadow: 0 0 6px #7dff6a88;
+  background: repeating-linear-gradient(
+    to bottom,
+    #ffffff08 0 2px,
+    transparent 2px 4px
+  );
 }
-.sg-tiles--right .sg-tile {
-  border-color: var(--sg-right);
-  background: #10382c;
-  color: var(--sg-right);
+.sg-receiver--idle .sg-tile,
+.sg-receiver--lost .sg-tile {
+  color: #2f6b38;
+  text-shadow: none;
+}
+.sg-receiver--wrong .sg-tile {
+  color: var(--sg-bad);
+  text-shadow: 0 0 6px #ff5d7388;
+}
+.sg-receiver--right {
+  animation: sg-pop 300ms steps(3);
+}
+@keyframes sg-pop {
+  50% {
+    transform: scale(1.06);
+  }
 }
 
 /* Board */
@@ -154,65 +164,148 @@
   width: 100%;
   height: auto;
   /* Keep the readout and Transmit button on screen on short phones. */
-  max-height: min(54dvh, 480px);
+  max-height: min(56dvh, 500px);
   display: block;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
 .sg-star {
   fill: #ffffff;
-  opacity: 0.18;
+  opacity: 0.35;
+}
+.sg-star--twinkle {
+  animation: sg-twinkle 2.4s steps(2) infinite;
+}
+@keyframes sg-twinkle {
+  50% {
+    opacity: 0.9;
+  }
 }
 .sg-cell {
   fill: #ffffff;
-  opacity: 0.06;
+  opacity: 0.12;
 }
-.sg-earth {
-  fill: var(--sg-earth);
+.sg-glow-px {
+  fill: #261c5c;
 }
-.sg-earth-rim {
-  fill: none;
-  stroke: var(--sg-earth-top);
-  stroke-width: 3;
+.sg-hills {
+  fill: #1e3f3a;
 }
-.sg-source {
-  fill: var(--sg-beam);
+.sg-ground {
+  fill: #2c6e3f;
 }
+.sg-grass {
+  fill: #5fcf5a;
+}
+
+.sg-px-beam {
+  fill: var(--sg-signal);
+}
+.sg-chevron {
+  animation: sg-blink 1s steps(1) infinite;
+}
+.sg-chevron--2 {
+  animation-delay: 0.5s;
+}
+@keyframes sg-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+
 .sg-beam {
   fill: none;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-.sg-beam--core {
-  stroke: var(--sg-beam);
-  stroke-width: 4;
-  stroke-dasharray: 10 8;
-  animation: sg-flow 0.9s linear infinite;
+  stroke-linejoin: miter;
+  stroke-linecap: square;
 }
 .sg-beam--glow {
-  stroke: var(--sg-beam-glow);
-  stroke-width: 12;
+  stroke: var(--sg-signal);
+  stroke-width: 16;
+  opacity: 0.22;
 }
-.sg-beam--escaped.sg-beam--core,
-.sg-beam--blocked.sg-beam--core {
-  stroke: var(--sg-lost);
-  opacity: 0.8;
+.sg-beam--main {
+  stroke: var(--sg-signal);
+  stroke-width: 8;
 }
-.sg-beam--escaped.sg-beam--glow,
-.sg-beam--blocked.sg-beam--glow {
-  stroke: transparent;
+.sg-beam--core {
+  stroke: var(--sg-hot);
+  stroke-width: 2;
+  stroke-dasharray: 6 6;
+  animation: sg-flow 0.6s linear infinite;
 }
 @keyframes sg-flow {
   to {
-    stroke-dashoffset: -18;
+    stroke-dashoffset: -12;
   }
 }
-.sg-debris {
-  fill: #3b2e36;
-  stroke: #6d5260;
-  stroke-width: 2;
+.sg-beam--escaped.sg-beam--main,
+.sg-beam--blocked.sg-beam--main {
+  stroke: #6b5ca8;
+}
+.sg-beam--escaped.sg-beam--core,
+.sg-beam--blocked.sg-beam--core {
+  stroke: #9d8fd6;
+}
+.sg-beam--escaped.sg-beam--glow,
+.sg-beam--blocked.sg-beam--glow {
+  opacity: 0;
 }
 
+.sg-px-rock {
+  fill: #7a6a7f;
+}
+.sg-px-rock-dark {
+  fill: #4b3f55;
+}
+.sg-px-crack {
+  fill: #2c2336;
+}
+
+/* Radar dish */
+.sg-dish {
+  transition: transform 420ms steps(6);
+}
+.sg-px-dish {
+  fill: #e9e4f5;
+}
+.sg-px-dish-dark {
+  fill: #a69fc0;
+}
+.sg-px-strut {
+  fill: #8f88aa;
+}
+.sg-px-base {
+  fill: #5d5775;
+}
+.sg-px-feed {
+  fill: #8f88aa;
+}
+.sg-dish--on .sg-px-feed {
+  fill: var(--sg-hot);
+}
+.sg-dish--on .sg-px-dish {
+  fill: #fff6d6;
+}
+.sg-dish-ping rect {
+  fill: none;
+  stroke: var(--sg-hot);
+  stroke-width: 2;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: sg-ping 1.2s steps(4) infinite;
+}
+@keyframes sg-ping {
+  from {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Satellites */
 .sg-sat {
   cursor: pointer;
   outline: none;
@@ -223,39 +316,70 @@
 .sg-sat-hit {
   fill: transparent;
 }
-.sg-sat-mirror {
-  fill: var(--sg-mirror);
-  transform-box: fill-box;
-  transform-origin: center;
-  transition: transform 160ms ease-out;
+.sg-sat-panels {
+  transform-box: view-box;
+  transform-origin: 0 0;
+  transition: transform 180ms steps(3);
+}
+.sg-px-panel {
+  fill: var(--sg-panel);
+}
+.sg-px-panel-edge {
+  fill: var(--sg-panel-dark);
+}
+.sg-px-panel-shine {
+  fill: #c9d8ff;
+}
+.sg-sat--lit .sg-px-panel {
+  fill: var(--sg-hot);
+}
+.sg-sat--lit .sg-px-panel-edge {
+  fill: #d9851a;
+}
+.sg-sat--lit .sg-px-panel-shine {
+  fill: #fff6d6;
+}
+.sg-sat-shadow {
+  fill: var(--sg-edge);
+}
+.sg-sat-antenna {
+  fill: var(--sg-cream);
 }
 .sg-sat-body {
-  fill: var(--sg-sat);
-  stroke: var(--sg-mirror);
-  stroke-width: 1.5;
+  fill: var(--sg-cream);
+  stroke: var(--sg-edge);
+  stroke-width: 2;
 }
 .sg-sat--lit .sg-sat-body {
-  fill: var(--sg-sat-lit);
-  stroke: var(--sg-beam);
-  stroke-width: 2.5;
+  fill: var(--sg-signal);
 }
 .sg-sat-op {
-  fill: var(--sg-ink);
-  font: 700 15px var(--sg-mono);
-  text-anchor: middle;
-  pointer-events: none;
+  color: var(--sg-night);
+}
+.sg-sat--lit .sg-sat-op {
+  color: var(--sg-ink);
+}
+.sg-px-ink {
+  fill: currentColor;
+}
+.sg-px-text {
+  fill: currentColor;
+  font: 700 15px var(--sg-pixel);
 }
 .sg-sat:focus-visible .sg-sat-body {
-  stroke: #ffffff;
+  stroke: var(--sg-hot);
   stroke-width: 3;
+}
+.sg-sat:not(.sg-sat--locked):active .sg-sat-body {
+  fill: #ffffff;
 }
 @media (hover: hover) {
   .sg-sat:not(.sg-sat--locked):hover .sg-sat-body {
-    stroke: #ffffff;
+    stroke: var(--sg-hot);
   }
 }
 
-/* Status, actions */
+/* Status line and buttons */
 .sg-status {
   margin: 0;
   min-height: 21px;
@@ -264,124 +388,329 @@
   font-size: 14px;
 }
 .sg-status--warn {
-  color: var(--sg-wrong);
+  color: var(--sg-bad);
 }
 .sg-status--hint {
-  color: var(--sg-beam);
+  color: var(--sg-hot);
 }
 .sg-button {
   appearance: none;
-  border: 0;
-  border-radius: 12px;
-  padding: 14px 18px;
-  font: inherit;
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 0.04em;
-  cursor: pointer;
-  background: var(--sg-beam);
-  color: #1b1200;
   width: 100%;
+  border: 0;
+  padding: 12px 18px 14px;
+  font: 700 18px/1 var(--sg-pixel);
+  color: var(--sg-ink);
+  background: var(--sg-signal);
+  box-shadow:
+    inset 0 -5px 0 var(--sg-signal-dark),
+    0 4px 0 var(--sg-edge);
+  cursor: pointer;
+}
+.sg-button:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow:
+    inset 0 -2px 0 var(--sg-signal-dark),
+    0 1px 0 var(--sg-edge);
 }
 .sg-button:disabled {
-  background: var(--sg-panel-2);
   color: var(--sg-dim);
+  background: var(--sg-night-2);
+  box-shadow:
+    inset 0 -5px 0 #150f36,
+    0 4px 0 var(--sg-edge);
   cursor: not-allowed;
 }
 .sg-button--quiet {
-  background: transparent;
-  color: var(--sg-ink);
-  border: 1px solid var(--sg-line);
   width: auto;
-  padding: 10px 14px;
-  font-size: 14px;
+  padding: 9px 14px 11px;
+  font-size: 16px;
+  background: var(--sg-panel);
+  box-shadow:
+    inset 0 -4px 0 var(--sg-panel-dark),
+    0 3px 0 var(--sg-edge);
+}
+.sg-button--quiet:active:not(:disabled) {
+  box-shadow:
+    inset 0 -2px 0 var(--sg-panel-dark),
+    0 1px 0 var(--sg-edge);
 }
 .sg-button:focus-visible {
-  outline: 3px solid #ffffff;
-  outline-offset: 2px;
+  outline: 3px solid var(--sg-hot);
+  outline-offset: 3px;
 }
 
-/* Panels: trace, legend, result */
-.sg-panel {
-  background: var(--sg-panel);
-  border: 1px solid var(--sg-line);
-  border-radius: 12px;
+/* Cards: trace, legend, result */
+.sg-card {
   padding: 12px 14px;
+  background: var(--sg-card);
+  box-shadow:
+    inset 0 0 0 2px var(--sg-line),
+    0 3px 0 var(--sg-edge);
 }
-.sg-panel h2 {
-  margin: 0 0 8px;
-  font-size: 13px;
-  color: var(--sg-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+.sg-card-title {
+  margin: 0 0 10px;
+  font: 700 14px/1.2 var(--sg-pixel);
+  color: var(--sg-ink);
+}
+.sg-op-icon {
+  display: block;
+  color: var(--sg-night);
 }
 .sg-steps {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 4px;
+  gap: 6px;
 }
 .sg-step {
-  display: grid;
-  grid-template-columns: 34px 1fr;
+  display: flex;
   align-items: center;
-  font: 15px var(--sg-mono);
+  gap: 10px;
 }
 .sg-step-op {
-  font-weight: 700;
-  color: var(--sg-beam);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  background: var(--sg-cream);
+  box-shadow: 0 2px 0 var(--sg-edge);
+}
+.sg-step-text {
+  font: 400 15px var(--sg-pixel);
+  letter-spacing: 0.08em;
 }
 .sg-legend {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
-.sg-legend li {
+.sg-legend-item {
+  margin: 0;
   display: grid;
-  grid-template-columns: 34px 1fr auto;
+  grid-template-columns: 30px 1fr auto;
   align-items: center;
-  gap: 4px;
+  gap: 10px;
 }
-.sg-legend-op {
-  font: 700 16px var(--sg-mono);
-  color: var(--sg-beam);
+.sg-legend-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  background: var(--sg-cream);
+  box-shadow: 0 2px 0 var(--sg-edge);
+}
+.sg-legend-name {
+  font-weight: 700;
 }
 .sg-legend-eg {
-  font: 13px var(--sg-mono);
+  font: 400 13px var(--sg-pixel);
   color: var(--sg-dim);
+  letter-spacing: 0.06em;
 }
 
 .sg-result {
   text-align: center;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   justify-items: center;
 }
-.sg-result h2 {
+.sg-result-title {
   margin: 0;
-  font-size: 20px;
-  color: var(--sg-right);
-  text-transform: none;
-  letter-spacing: 0;
+  font: 700 20px/1 var(--sg-pixel);
+  color: var(--sg-good);
+  text-shadow: 2px 2px 0 var(--sg-edge);
+}
+.sg-result .sg-tile {
+  color: var(--sg-night);
+  background: var(--sg-good);
+  box-shadow:
+    inset 0 -4px 0 #3fa835,
+    0 3px 0 var(--sg-edge);
 }
 .sg-result p {
   margin: 0;
 }
 .sg-share {
   margin: 0;
-  font: 15px var(--sg-mono);
+  font:
+    15px ui-monospace,
+    Menlo,
+    Consolas,
+    monospace;
   white-space: pre;
   color: var(--sg-dim);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sg-beam--core {
+  .sg-beam--core,
+  .sg-star--twinkle,
+  .sg-chevron,
+  .sg-dish-ping rect,
+  .sg-receiver--right {
     animation: none;
   }
-  .sg-sat-mirror {
+  .sg-sat-panels,
+  .sg-dish {
+    transition: none;
+  }
+}
+
+/* Letter swaps: faint dots are letters a satellite leaves alone. */
+.sg-px-ink--faint {
+  opacity: 0.3;
+}
+
+/* The text riding each stretch of beam. */
+.sg-tag-box {
+  fill: var(--sg-night);
+  stroke: var(--sg-signal);
+  stroke-width: 2;
+}
+.sg-tag-letter {
+  fill: var(--sg-ink);
+  font: 700 11px var(--sg-pixel);
+}
+.sg-tag-letter--moved {
+  fill: var(--sg-hot);
+}
+
+/* Live scoring: taps against par. */
+.sg-taps {
+  margin-left: auto;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font: 700 13px/1 var(--sg-pixel);
+  color: var(--sg-ink);
+}
+.sg-par {
+  font-size: 11px;
+  color: var(--sg-dim);
+}
+.sg-help {
+  margin: 0 0 10px;
+  color: var(--sg-dim);
+  font-size: 14px;
+}
+
+/* Tray version: squares you can place on, the tray, bolted satellites. */
+.sg-target {
+  fill: #ffd23f14;
+  stroke: var(--sg-hot);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  cursor: pointer;
+  outline: none;
+  animation: sg-blink 1.2s steps(1) infinite;
+}
+.sg-target:hover,
+.sg-target:focus-visible {
+  fill: #ffd23f33;
+}
+.sg-sat-bolt {
+  fill: var(--sg-night);
+}
+.sg-sat--fixed .sg-sat-body {
+  fill: #b9b0cf;
+}
+.sg-sat--fixed.sg-sat--lit .sg-sat-body {
+  fill: #ff7a40;
+}
+.sg-tray {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sg-piece {
+  appearance: none;
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  min-width: 62px;
+  padding: 8px 8px 6px;
+  border: 0;
+  font: inherit;
+  color: var(--sg-ink);
+  background: var(--sg-card);
+  box-shadow:
+    inset 0 0 0 2px var(--sg-line),
+    0 3px 0 var(--sg-edge);
+  cursor: pointer;
+}
+.sg-piece-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 32px;
+  background: var(--sg-cream);
+  box-shadow: 0 2px 0 var(--sg-edge);
+}
+.sg-piece-label {
+  font: 700 12px/1 var(--sg-pixel);
+}
+.sg-piece-state {
+  min-height: 12px;
+  font-size: 11px;
+  color: var(--sg-dim);
+}
+.sg-piece--picked {
+  transform: translateY(-4px);
+  box-shadow:
+    inset 0 0 0 3px var(--sg-hot),
+    0 7px 0 var(--sg-edge);
+}
+.sg-piece--picked .sg-piece-state {
+  color: var(--sg-hot);
+}
+.sg-piece--placed {
+  opacity: 0.55;
+}
+.sg-piece:focus-visible {
+  outline: 3px solid var(--sg-hot);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg-target {
+    animation: none;
+  }
+}
+/* Leave room for the tray under the board on short phones. */
+.sg--tray .sg-board {
+  max-height: min(46dvh, 460px);
+}
+
+/* Top row in the tray version: letters slide when a satellite swaps them. */
+.sg-tiles--sliding {
+  position: relative;
+  height: 44px;
+  margin: 0 auto;
+}
+.sg-tile--slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.sg-incoming .sg-tile--moved {
+  background: var(--sg-hot);
+  color: var(--sg-night);
+  box-shadow:
+    inset 0 -4px 0 #c99a17,
+    0 3px 0 var(--sg-edge);
+}
+.sg-signal-note {
+  margin: 6px 0 0;
+  text-align: center;
+  font-size: 12px;
+  color: var(--sg-dim);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg-tile--slide {
     transition: none;
   }
 }

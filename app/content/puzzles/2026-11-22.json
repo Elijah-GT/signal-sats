@@ -7,7 +7,7 @@
     "height": 6,
     "source": {
       "side": "top",
-      "index": 3
+      "index": 2
     },
     "receiver": {
       "side": "bottom",
@@ -20,100 +20,111 @@
         "x": 1,
         "y": 5,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 0,
+          "b": 1
         }
       },
       {
         "id": "B",
         "x": 3,
-        "y": 0,
+        "y": 4,
         "op": {
-          "kind": "swap"
+          "kind": "trade",
+          "a": 1,
+          "b": 2
         }
       },
       {
         "id": "C",
         "x": 1,
-        "y": 3,
+        "y": 4,
         "op": {
-          "kind": "shift",
-          "amount": 3
+          "kind": "trade",
+          "a": 1,
+          "b": 4
         }
       },
       {
         "id": "D",
         "x": 2,
-        "y": 1,
+        "y": 2,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 1,
+          "b": 2
         }
       },
       {
         "id": "E",
-        "x": 4,
-        "y": 0,
+        "x": 1,
+        "y": 2,
         "op": {
-          "kind": "mirror"
+          "kind": "trade",
+          "a": 1,
+          "b": 3
         }
       },
       {
         "id": "F",
-        "x": 2,
-        "y": 0,
+        "x": 4,
+        "y": 5,
         "op": {
-          "kind": "mirror"
+          "kind": "trade",
+          "a": 2,
+          "b": 3
         }
       },
       {
         "id": "G",
-        "x": 4,
-        "y": 1,
+        "x": 3,
+        "y": 2,
         "op": {
-          "kind": "swap"
+          "kind": "trade",
+          "a": 0,
+          "b": 1
         }
       }
     ],
     "debris": [
       {
         "x": 0,
-        "y": 2
+        "y": 3
       },
       {
-        "x": 0,
-        "y": 3
+        "x": 4,
+        "y": 4
       }
     ]
   },
-  "ciphertext": "SGIZV",
+  "ciphertext": "THARE",
   "start": {
     "A": "/",
     "B": "/",
     "C": "\\",
+    "D": "/",
+    "E": "\\",
+    "F": "/",
+    "G": "/"
+  },
+  "answer": "EARTH",
+  "solution": {
+    "A": "\\",
+    "B": "/",
+    "C": "/",
     "D": "\\",
     "E": "/",
     "F": "\\",
     "G": "\\"
   },
-  "answer": "EARTH",
-  "solution": {
-    "A": "/",
-    "B": "\\",
-    "C": "\\",
-    "D": "/",
-    "E": "\\",
-    "F": "\\",
-    "G": "/"
-  },
   "stats": {
     "satellites": 7,
-    "pathLength": 4,
-    "reachingSettings": 24,
+    "pathLength": 6,
+    "reachingSettings": 18,
     "routes": 4,
-    "minTaps": 4,
+    "minTaps": 5,
     "opKinds": [
-      "swap",
-      "mirror",
-      "reverse"
+      "trade"
     ]
   }
 }

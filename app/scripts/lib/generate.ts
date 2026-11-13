@@ -34,18 +34,38 @@ const SELF_CANCELLING = new Set<CipherOp['kind']>([
   'reverse',
   'swap',
   'mirror',
+  'trade',
 ]);
+
+const sameOp = (a: CipherOp, b: CipherOp): boolean =>
+  JSON.stringify(a) === JSON.stringify(b);
 
 /** Two identical self-cancelling ops in a row undo each other, wasting both satellites. */
 const hasCancellingPair = (ops: readonly CipherOp[]): boolean =>
-  ops.some(
-    (op, i) =>
-      i > 0 && SELF_CANCELLING.has(op.kind) && ops[i - 1]?.kind === op.kind
-  );
+  ops.some((op, i) => {
+    const prev = ops[i - 1];
+    return (
+      prev !== undefined && SELF_CANCELLING.has(op.kind) && sameOp(prev, op)
+    );
+  });
+
+/** Neighbouring letter swaps that share a letter, so their order matters. */
+export const countOverlaps = (ops: readonly CipherOp[]): number =>
+  ops.filter((op, i) => {
+    const prev = ops[i - 1];
+    if (prev?.kind !== 'trade' || op.kind !== 'trade') return false;
+    return [op.a, op.b].some((p) => p === prev.a || p === prev.b);
+  }).length;
+
+const WORD_LENGTH = 5;
 
 const randomOp = (spec: BandSpec, rng: Rng): CipherOp => {
   const kind = rng.pick(spec.ops);
   if (kind === 'shift') return { kind, amount: rng.int(1, spec.maxShift) };
+  if (kind === 'trade') {
+    const a = rng.int(0, WORD_LENGTH - 2);
+    return { kind, a, b: rng.int(a + 1, WORD_LENGTH - 1) };
+  }
   return { kind };
 };
 
@@ -106,6 +126,7 @@ const tryGenerate = (
 
   const ops = path.map((s) => s.op);
   if (hasCancellingPair(ops)) return null;
+  if (countOverlaps(ops) < spec.minOverlaps) return null;
   const ciphertext = encode(answer, ops);
   if (ciphertext === answer || isWord(ciphertext)) return null;
   // Every satellite on the route must visibly change the text.

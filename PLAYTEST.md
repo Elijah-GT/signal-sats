@@ -2,9 +2,11 @@
 
 **Goal:** find out whether the puzzle is fun and learnable, and settle three decisions before the real Reddit app is built.
 
-1. **Scoring mode:** *3 transmissions* (text only revealed when you transmit, 3 scored tries) or *Live decode* (text at Earth updates as you tap, scored by taps).
+**How it plays now (swap version):** every satellite swaps two letters, shown by five dots with the swapped pair bracketed. The signal is always an anagram of the answer: spot the word, then turn mirrors so the beam passes the right satellites in the right order. The letters ride the beam and show each swap as it happens. *Live decode* (the default) is scored by taps against par, the fewest taps possible.
+
+1. **Scoring mode:** *Live decode* (taps vs par) or *3 transmissions* (3 scored tries). Live is the main candidate now.
 2. **Difficulty curve:** is Monday easy enough, and is Sunday hard but fair?
-3. **The operations:** do people understand the satellite symbols from the legend alone?
+3. **The swaps:** do people read the dots as "these two letters swap" without help, and do they plan a route instead of tapping at random?
 
 ---
 
@@ -32,9 +34,9 @@ Alternate the starting mode between testers so neither mode always gets the fres
 
 | Order | Tester A | Tester B |
 |---|---|---|
-| 1 | Monday · 3 transmissions | Monday · Live decode |
+| 1 | Monday · Live decode | Monday · 3 transmissions |
 | 2 | Wednesday · 3 transmissions | Wednesday · Live decode |
-| 3 | Friday · Live decode | Friday · 3 transmissions |
+| 3 | Friday · 3 transmissions | Friday · Live decode |
 | 4 | Sunday · Live decode | Sunday · 3 transmissions |
 
 **Watch for, and note down:**
@@ -47,7 +49,7 @@ Alternate the starting mode between testers so neither mode always gets the fres
 **Ask afterwards:**
 1. Which mode did you enjoy more, and why?
 2. Was there a moment you felt clever? A moment you felt stuck?
-3. What did ⇄, ⤨, ↻, +n and ◐ mean to you before you read the panel?
+3. What did the dots on each satellite mean to you before you read "How it works"?
 4. Would you come back tomorrow for a new one?
 5. Anything that looked broken or confusing?
 

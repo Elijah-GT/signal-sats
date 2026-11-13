@@ -38,7 +38,10 @@ export type Puzzle = {
 export type ClientPuzzle = Pick<
   Puzzle,
   'date' | 'week' | 'band' | 'board' | 'ciphertext' | 'start'
->;
+> & {
+  /** Fewest taps that solve it from the starting angles. */
+  par: number;
+};
 
 export const toClientPuzzle = (puzzle: Puzzle): ClientPuzzle => ({
   date: puzzle.date,
@@ -47,4 +50,5 @@ export const toClientPuzzle = (puzzle: Puzzle): ClientPuzzle => ({
   board: puzzle.board,
   ciphertext: puzzle.ciphertext,
   start: puzzle.start,
+  par: puzzle.stats.minTaps,
 });

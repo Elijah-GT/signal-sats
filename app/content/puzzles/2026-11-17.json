@@ -7,7 +7,7 @@
     "height": 6,
     "source": {
       "side": "top",
-      "index": 1
+      "index": 2
     },
     "receiver": {
       "side": "bottom",
@@ -17,52 +17,65 @@
     "satellites": [
       {
         "id": "A",
-        "x": 3,
-        "y": 4,
+        "x": 2,
+        "y": 5,
         "op": {
-          "kind": "swap"
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "B",
-        "x": 0,
-        "y": 0,
+        "x": 2,
+        "y": 1,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "C",
         "x": 4,
-        "y": 0,
+        "y": 1,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 2,
+          "b": 3
         }
       },
       {
         "id": "D",
-        "x": 1,
-        "y": 0,
+        "x": 0,
+        "y": 1,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 0,
+          "b": 4
         }
       }
     ],
-    "debris": []
+    "debris": [
+      {
+        "x": 3,
+        "y": 2
+      }
+    ]
   },
-  "ciphertext": "AEKAW",
+  "ciphertext": "EWAAK",
   "start": {
-    "A": "\\",
+    "A": "/",
     "B": "\\",
-    "C": "/",
-    "D": "/"
+    "C": "\\",
+    "D": "\\"
   },
   "answer": "AWAKE",
   "solution": {
-    "A": "/",
+    "A": "\\",
     "B": "/",
-    "C": "\\",
-    "D": "\\"
+    "C": "/",
+    "D": "/"
   },
   "stats": {
     "satellites": 4,
@@ -71,8 +84,7 @@
     "routes": 2,
     "minTaps": 2,
     "opKinds": [
-      "rotate",
-      "reverse"
+      "trade"
     ]
   }
 }

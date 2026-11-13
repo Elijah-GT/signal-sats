@@ -87,6 +87,22 @@ export const solvedOn = (state: GameState): number | null => {
 export const scoredTriesLeft = (state: GameState): number =>
   Math.max(0, SCORED_TRANSMISSIONS - state.transmissions.length);
 
+/**
+ * Spoiler-free result for live play, scored by taps against par, e.g.
+ * "Signal Sats 2026-11-16 · 3 taps (par 2)\n🛰🛰🛰📡".
+ */
+export const parShareText = (
+  title: string,
+  date: string,
+  taps: number,
+  par: number
+): string => {
+  const shown = Math.min(taps, 12);
+  const sats = '🛰'.repeat(shown) + (taps > shown ? '…' : '');
+  const badge = taps <= par ? ' ⭐' : '';
+  return `${title} ${date} · ${taps} ${taps === 1 ? 'tap' : 'taps'} (par ${par})${badge}\n${sats}📡`;
+};
+
 /** Spoiler-free result for sharing, e.g. "Signal Sats 2026-11-16 2/3\n❌📡⬛". */
 export const shareText = (
   title: string,

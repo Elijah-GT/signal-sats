@@ -22,80 +22,95 @@ export type BandSpec = {
   minTaps: number;
   /** Fewest different routes to the receiver, so trying them all isn't enough. */
   minRoutes: number;
+  /**
+   * Fewest neighbouring letter swaps on the solution route that share a
+   * letter. Those are the ones where order matters, which is what makes a
+   * route worth planning.
+   */
+  minOverlaps: number;
 };
 
-const STRUCTURAL: CipherOp['kind'][] = ['reverse', 'rotate', 'swap'];
+// Every satellite swaps two letters. The answer is always an anagram of the
+// signal: spot the word, then route the beam to spell it.
+const SWAPS: CipherOp['kind'][] = ['trade'];
 
 export const BANDS: Record<DayBand, BandSpec> = {
   mon: {
     satellites: [3, 3],
     pathLength: [2, 2],
-    ops: ['reverse', 'rotate'],
+    ops: SWAPS,
     maxShift: 0,
     debris: [0, 0],
     minDecoys: 0,
     minTaps: 1,
     minRoutes: 2,
+    minOverlaps: 0,
   },
   tue: {
     satellites: [4, 4],
     pathLength: [2, 2],
-    ops: STRUCTURAL,
+    ops: SWAPS,
     maxShift: 0,
     debris: [0, 1],
     minDecoys: 0,
     minTaps: 2,
     minRoutes: 2,
+    minOverlaps: 0,
   },
   wed: {
     satellites: [5, 5],
     pathLength: [2, 4],
-    ops: STRUCTURAL,
+    ops: SWAPS,
     maxShift: 0,
     debris: [0, 1],
     minDecoys: 1,
     minTaps: 2,
     minRoutes: 3,
+    minOverlaps: 1,
   },
   thu: {
     satellites: [5, 6],
     pathLength: [4, 4],
-    ops: [...STRUCTURAL, 'shift'],
-    maxShift: 2,
+    ops: SWAPS,
+    maxShift: 0,
     debris: [1, 1],
     minDecoys: 1,
     minTaps: 2,
     minRoutes: 3,
+    minOverlaps: 1,
   },
   fri: {
     satellites: [5, 6],
     pathLength: [4, 4],
-    ops: [...STRUCTURAL, 'shift'],
-    maxShift: 3,
+    ops: SWAPS,
+    maxShift: 0,
     debris: [1, 2],
     minDecoys: 1,
     minTaps: 3,
     minRoutes: 3,
+    minOverlaps: 1,
   },
   sat: {
     satellites: [6, 7],
     pathLength: [4, 4],
-    ops: [...STRUCTURAL, 'shift', 'mirror'],
-    maxShift: 3,
+    ops: SWAPS,
+    maxShift: 0,
     debris: [1, 2],
     minDecoys: 1,
     minTaps: 3,
     minRoutes: 4,
+    minOverlaps: 2,
   },
   sun: {
     satellites: [6, 7],
     pathLength: [4, 6],
-    ops: [...STRUCTURAL, 'shift', 'mirror'],
-    maxShift: 3,
+    ops: SWAPS,
+    maxShift: 0,
     debris: [1, 2],
     minDecoys: 1,
     minTaps: 3,
     minRoutes: 4,
+    minOverlaps: 2,
   },
 };
 

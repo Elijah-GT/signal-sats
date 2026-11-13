@@ -17,34 +17,42 @@
     "satellites": [
       {
         "id": "A",
-        "x": 4,
-        "y": 0,
+        "x": 3,
+        "y": 2,
         "op": {
-          "kind": "mirror"
+          "kind": "trade",
+          "a": 0,
+          "b": 2
         }
       },
       {
         "id": "B",
         "x": 4,
-        "y": 2,
+        "y": 5,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 1,
+          "b": 3
         }
       },
       {
         "id": "C",
-        "x": 1,
-        "y": 0,
+        "x": 3,
+        "y": 5,
         "op": {
-          "kind": "mirror"
+          "kind": "trade",
+          "a": 0,
+          "b": 2
         }
       },
       {
         "id": "D",
-        "x": 0,
+        "x": 4,
         "y": 2,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 0,
+          "b": 2
         }
       },
       {
@@ -52,64 +60,67 @@
         "x": 1,
         "y": 2,
         "op": {
-          "kind": "mirror"
+          "kind": "trade",
+          "a": 1,
+          "b": 3
         }
       },
       {
         "id": "F",
-        "x": 4,
+        "x": 2,
         "y": 5,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 2,
+          "b": 3
         }
       },
       {
         "id": "G",
-        "x": 3,
-        "y": 0,
+        "x": 2,
+        "y": 2,
         "op": {
-          "kind": "shift",
-          "amount": 3
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       }
     ],
     "debris": [
       {
         "x": 0,
-        "y": 0
+        "y": 3
       }
     ]
   },
-  "ciphertext": "BSLFZ",
+  "ciphertext": "COIEV",
   "start": {
-    "A": "/",
-    "B": "\\",
+    "A": "\\",
+    "B": "/",
     "C": "/",
     "D": "\\",
     "E": "\\",
     "F": "/",
-    "G": "\\"
+    "G": "/"
   },
   "answer": "VOICE",
   "solution": {
-    "A": "\\",
-    "B": "/",
+    "A": "/",
+    "B": "\\",
     "C": "\\",
     "D": "/",
-    "E": "/",
-    "F": "/",
-    "G": "\\"
+    "E": "\\",
+    "F": "\\",
+    "G": "/"
   },
   "stats": {
     "satellites": 7,
     "pathLength": 4,
-    "reachingSettings": 24,
+    "reachingSettings": 20,
     "routes": 4,
     "minTaps": 3,
     "opKinds": [
-      "shift",
-      "mirror",
-      "rotate"
+      "trade"
     ]
   }
 }

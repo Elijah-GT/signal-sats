@@ -38,6 +38,14 @@ const rotateLeft = (text: string): string =>
 const rotateRight = (text: string): string =>
   text.length < 2 ? text : text.charAt(text.length - 1) + text.slice(0, -1);
 
+/** Swaps the letters at two positions. Out-of-range positions change nothing. */
+const trade = (text: string, a: number, b: number): string => {
+  if (a === b || a >= text.length || b >= text.length) return text;
+  const letters = [...text];
+  [letters[a], letters[b]] = [letters[b] ?? '', letters[a] ?? ''];
+  return letters.join('');
+};
+
 /** What a satellite does to the text passing through it. */
 export const applyOp = (text: string, op: CipherOp): string => {
   switch (op.kind) {
@@ -51,6 +59,8 @@ export const applyOp = (text: string, op: CipherOp): string => {
       return shiftLetters(text, op.amount);
     case 'mirror':
       return mirrorLetters(text);
+    case 'trade':
+      return trade(text, op.a, op.b);
   }
 };
 
@@ -67,6 +77,8 @@ export const unapplyOp = (text: string, op: CipherOp): string => {
       return shiftLetters(text, -op.amount);
     case 'mirror':
       return mirrorLetters(text);
+    case 'trade':
+      return trade(text, op.a, op.b);
   }
 };
 
@@ -83,6 +95,8 @@ export const opSymbol = (op: CipherOp): string => {
       return `+${op.amount}`;
     case 'mirror':
       return '◐';
+    case 'trade':
+      return `${op.a + 1}⇄${op.b + 1}`;
   }
 };
 
@@ -99,6 +113,8 @@ export const opName = (op: CipherOp): string => {
       return `Shift +${op.amount}`;
     case 'mirror':
       return 'Mirror';
+    case 'trade':
+      return `Swap letters ${op.a + 1} and ${op.b + 1}`;
   }
 };
 

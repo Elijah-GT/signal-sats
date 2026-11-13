@@ -1,7 +1,11 @@
+import '@fontsource/silkscreen/latin-400.css';
+import '@fontsource/silkscreen/latin-700.css';
+import '@fontsource/reddit-sans/latin-400.css';
+import '@fontsource/reddit-sans/latin-700.css';
 import './game.css';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { opSymbol } from '../../shared/engine/cipher';
+import { applyOp } from '../../shared/engine/cipher';
 import {
   SCORED_TRANSMISSIONS,
   isSolved,
@@ -16,6 +20,7 @@ import {
 import type { ClientPuzzle, DayBand } from '../../shared/puzzle';
 import { Board } from './Board';
 import { OpLegend } from './OpLegend';
+import { OpIcon } from './pixels';
 import { ResultCard } from './ResultCard';
 import { Tiles, type TileTone } from './Tiles';
 
@@ -36,13 +41,13 @@ type PuzzleViewProps = {
 };
 
 const BAND_LABEL: Record<DayBand, { day: string; level: number }> = {
-  mon: { day: 'Monday', level: 1 },
-  tue: { day: 'Tuesday', level: 2 },
-  wed: { day: 'Wednesday', level: 3 },
-  thu: { day: 'Thursday', level: 4 },
-  fri: { day: 'Friday', level: 5 },
-  sat: { day: 'Saturday', level: 6 },
-  sun: { day: 'Sunday', level: 7 },
+  mon: { day: 'Mon', level: 1 },
+  tue: { day: 'Tue', level: 2 },
+  wed: { day: 'Wed', level: 3 },
+  thu: { day: 'Thu', level: 4 },
+  fri: { day: 'Fri', level: 5 },
+  sat: { day: 'Sat', level: 6 },
+  sun: { day: 'Sun', level: 7 },
 };
 
 const PLACEHOLDER = '·····';
@@ -122,9 +127,10 @@ export const PuzzleView = ({
   let warn = false;
   if (!solved) {
     if (firstVisit) {
-      status = 'Tap a satellite to turn its reflector.';
+      status =
+        'Tap a satellite to turn its mirror. Each one swaps the two letters it marks.';
     } else if (block === 'lost') {
-      status = 'The beam is lost in space. Aim it down to Earth.';
+      status = 'The beam is lost in space. Bend it down to the dish.';
       warn = true;
     } else if (justMissed) {
       status =
@@ -132,36 +138,47 @@ export const PuzzleView = ({
           ? `Not a word. ${triesLeft} scored ${triesLeft === 1 ? 'try' : 'tries'} left.`
           : 'Not a word. Keep going, but it no longer counts toward your score.';
       warn = true;
+    } else if (mode === 'live') {
+      status = 'Not a word yet. Keep turning mirrors.';
     } else if (mode === 'transmit' && block === 'repeat') {
       status = 'You already sent this route. Try another.';
       warn = true;
     } else if (mode === 'transmit') {
-      status = 'The beam reaches Earth. Transmit when it spells a word.';
+      status = 'Signal caught! Transmit if you think it spells a word.';
     }
   }
   const band = BAND_LABEL[puzzle.band];
+  // The text on each stretch of beam: the signal, then after each satellite.
+  const texts = current.trace.hits.reduce<string[]>(
+    (acc, s) => [...acc, applyOp(acc.at(-1) ?? '', s.op)],
+    [puzzle.ciphertext]
+  );
   const trace = mode === 'live' ? current.steps : last?.steps;
 
   return (
     <main className="sg">
       <header className="sg-head">
-        <div>
-          <h1 className="sg-title">{title}</h1>
-          <p className="sg-sub">
-            {band.day}
-            <span
-              className="sg-pips"
-              aria-label={`Difficulty ${band.level} of 7`}
-            >
-              {Array.from({ length: 7 }, (_, i) => (
-                <span
-                  key={i}
-                  className={`sg-pip${i < band.level ? ' sg-pip--on' : ''}`}
-                />
-              ))}
-            </span>
-          </p>
-        </div>
+        <h1 className="sg-title">{title}</h1>
+        <span
+          className="sg-day"
+          aria-label={`${band.day}, difficulty ${band.level} of 7`}
+        >
+          {band.day}
+          <span className="sg-pips" aria-hidden="true">
+            {Array.from({ length: 7 }, (_, i) => (
+              <span
+                key={i}
+                className={`sg-pip${i < band.level ? ' sg-pip--on' : ''}`}
+              />
+            ))}
+          </span>
+        </span>
+        {mode === 'live' && (
+          <span className="sg-taps">
+            {state.taps} {state.taps === 1 ? 'tap' : 'taps'}
+            <span className="sg-par">par {puzzle.par}</span>
+          </span>
+        )}
         {mode === 'transmit' && (
           <ol className="sg-tries" aria-label="Scored transmissions">
             {Array.from({ length: SCORED_TRANSMISSIONS }, (_, i) => {
@@ -176,18 +193,16 @@ export const PuzzleView = ({
                 <li
                   key={i}
                   className={`sg-try${kind}`}
+                  style={{ height: 8 + i * 6 }}
                   aria-label={`Transmission ${i + 1}: ${label}`}
-                >
-                  {!t ? '' : t.correct ? '✓' : '✕'}
-                </li>
+                />
               );
             })}
           </ol>
         )}
       </header>
 
-      <div className="sg-signal">
-        <span className="sg-label">Signal</span>
+      <div className="sg-incoming">
         <Tiles
           text={puzzle.ciphertext}
           tone="incoming"
@@ -201,10 +216,10 @@ export const PuzzleView = ({
         trace={current.trace}
         locked={solved}
         onTap={(id) => setState((s) => tap(s, id))}
+        texts={texts}
       />
 
-      <div className="sg-signal">
-        <span className="sg-label">Earth</span>
+      <div className={`sg-receiver sg-receiver--${tone}`}>
         <Tiles text={readout} tone={tone} label="Received on Earth" />
       </div>
 
@@ -221,6 +236,7 @@ export const PuzzleView = ({
           date={puzzle.date}
           state={state}
           mode={mode}
+          par={puzzle.par}
         />
       ) : (
         mode === 'transmit' && (
@@ -235,8 +251,8 @@ export const PuzzleView = ({
       )}
 
       {trace && trace.length > 0 && (
-        <section className="sg-panel" aria-labelledby="sg-trace-title">
-          <h2 id="sg-trace-title">
+        <section className="sg-card" aria-labelledby="sg-trace-title">
+          <h2 id="sg-trace-title" className="sg-card-title">
             {mode === 'live' ? 'Along the beam' : 'Last transmission'}
           </h2>
           <ol className="sg-steps">
@@ -246,10 +262,10 @@ export const PuzzleView = ({
                   className="sg-step-op"
                   aria-label={`Satellite ${step.satelliteId}`}
                 >
-                  {opSymbol(step.op)}
+                  <OpIcon op={step.op} size={18} />
                 </span>
-                <span>
-                  {step.before} → {step.after}
+                <span className="sg-step-text">
+                  {step.before} <span aria-label="becomes">›</span> {step.after}
                 </span>
               </li>
             ))}

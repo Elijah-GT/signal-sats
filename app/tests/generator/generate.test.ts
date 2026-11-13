@@ -8,7 +8,7 @@ import {
 } from '../../src/shared/engine/validate.ts';
 import type { DayBand } from '../../src/shared/puzzle.ts';
 import { BANDS, addDays, bandForDate } from '../../scripts/lib/bands.ts';
-import { generatePuzzle } from '../../scripts/lib/generate.ts';
+import { countOverlaps, generatePuzzle } from '../../scripts/lib/generate.ts';
 import { fewestTaps, solve } from '../../scripts/lib/solve.ts';
 import {
   createBlocklist,
@@ -87,6 +87,19 @@ describe('generatePuzzle', () => {
       );
       assert.ok(![...report.texts].some(isBlocked), `${band}: clean text`);
 
+      // Letter swaps only: the signal is an anagram of the answer, and enough
+      // neighbouring swaps share a letter that their order matters.
+      const sorted = (t: string) => [...t].sort().join('');
+      assert.equal(
+        sorted(puzzle.ciphertext),
+        sorted(answer),
+        `${band}: anagram`
+      );
+      assert.ok(
+        countOverlaps(hits.map((s) => s.op)) >= spec.minOverlaps,
+        `${band}: overlaps`
+      );
+
       assert.equal(puzzle.week, 'test');
       assert.equal(puzzle.stats.routes, report.routes);
     }
@@ -157,6 +170,20 @@ describe('generatePuzzle', () => {
           maxAttempts: 2000,
         }),
       /No valid puzzle/
+    );
+  });
+});
+
+describe('countOverlaps', () => {
+  test('counts neighbouring swaps that share a letter', () => {
+    assert.equal(
+      countOverlaps([
+        { kind: 'trade', a: 0, b: 1 },
+        { kind: 'trade', a: 1, b: 2 },
+        { kind: 'trade', a: 3, b: 4 },
+        { kind: 'reverse' },
+      ]),
+      1
     );
   });
 });

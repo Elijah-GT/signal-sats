@@ -17,10 +17,18 @@ describe('op labels', () => {
       { kind: 'rotate' },
       { kind: 'shift', amount: 2 },
       { kind: 'mirror' },
+      { kind: 'trade', a: 0, b: 3 },
     ];
     assert.deepEqual(
       ops.map((op) => `${opSymbol(op)} ${opName(op)}`),
-      ['⇄ Reverse', '⤨ Swap pairs', '↻ Rotate', '+2 Shift +2', '◐ Mirror']
+      [
+        '⇄ Reverse',
+        '⤨ Swap pairs',
+        '↻ Rotate',
+        '+2 Shift +2',
+        '◐ Mirror',
+        '1⇄4 Swap letters 1 and 4',
+      ]
     );
   });
 });
@@ -108,5 +116,35 @@ describe('encode', () => {
 
   test('no ops leaves the text unchanged', () => {
     assert.equal(encode('ORBIT', []), 'ORBIT');
+  });
+});
+
+describe('trade', () => {
+  const op: CipherOp = { kind: 'trade', a: 1, b: 3 };
+
+  test('swaps the letters at two positions, and undoing it swaps them back', () => {
+    assert.equal(applyOp('ABCDE', op), 'ADCBE');
+    assert.equal(unapplyOp('ADCBE', op), 'ABCDE');
+  });
+
+  test('positions past the end leave the text alone', () => {
+    assert.equal(applyOp('AB', op), 'AB');
+    assert.equal(applyOp('ABCDE', { kind: 'trade', a: 2, b: 2 }), 'ABCDE');
+  });
+
+  test('is labelled with 1-based letter positions', () => {
+    assert.equal(opSymbol(op), '2⇄4');
+    assert.equal(opName(op), 'Swap letters 2 and 4');
+  });
+
+  test('order matters when two swaps share a letter', () => {
+    const first: CipherOp = { kind: 'trade', a: 0, b: 1 };
+    const second: CipherOp = { kind: 'trade', a: 1, b: 2 };
+    assert.notEqual(
+      applyOp(applyOp('ABC', first), second),
+      applyOp(applyOp('ABC', second), first)
+    );
+    assert.equal(encode('PROBE', [first, second]), 'OPRBE');
+    assert.equal(applyOp(applyOp('OPRBE', first), second), 'PROBE');
   });
 });

@@ -98,6 +98,24 @@ describe('validateBoard', () => {
       ]);
     }
   });
+
+  test('rejects letter swaps that are not two different positions', () => {
+    for (const [a, b] of [
+      [2, 2],
+      [3, 1],
+      [-1, 2],
+      [0.5, 2],
+    ] as const) {
+      const errors = validateBoard(
+        withChanges({
+          satellites: [{ id: 'S', x: 0, y: 0, op: { kind: 'trade', a, b } }],
+        })
+      );
+      assert.deepEqual(errors, [
+        'Satellite "S" must swap two different letter positions',
+      ]);
+    }
+  });
 });
 
 describe('validateSettings', () => {

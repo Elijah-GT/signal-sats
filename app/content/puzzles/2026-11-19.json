@@ -17,79 +17,89 @@
     "satellites": [
       {
         "id": "A",
-        "x": 2,
-        "y": 4,
+        "x": 3,
+        "y": 2,
         "op": {
-          "kind": "reverse"
+          "kind": "trade",
+          "a": 0,
+          "b": 2
         }
       },
       {
         "id": "B",
-        "x": 3,
-        "y": 0,
+        "x": 0,
+        "y": 2,
         "op": {
-          "kind": "shift",
-          "amount": 1
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "C",
         "x": 4,
-        "y": 0,
+        "y": 2,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 2,
+          "b": 3
         }
       },
       {
         "id": "D",
-        "x": 2,
-        "y": 0,
+        "x": 4,
+        "y": 5,
         "op": {
-          "kind": "shift",
-          "amount": 1
+          "kind": "trade",
+          "a": 2,
+          "b": 4
         }
       },
       {
         "id": "E",
         "x": 3,
-        "y": 4,
+        "y": 5,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "F",
         "x": 2,
-        "y": 5,
+        "y": 2,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       }
     ],
     "debris": [
       {
-        "x": 1,
-        "y": 2
+        "x": 4,
+        "y": 1
       }
     ]
   },
-  "ciphertext": "GZPMR",
+  "ciphertext": "TROIB",
   "start": {
     "A": "/",
     "B": "\\",
     "C": "/",
-    "D": "\\",
+    "D": "/",
     "E": "\\",
-    "F": "\\"
+    "F": "/"
   },
   "answer": "ORBIT",
   "solution": {
     "A": "\\",
     "B": "/",
-    "C": "/",
+    "C": "\\",
     "D": "/",
-    "E": "\\",
-    "F": "\\"
+    "E": "/",
+    "F": "/"
   },
   "stats": {
     "satellites": 6,
@@ -98,9 +108,7 @@
     "routes": 3,
     "minTaps": 3,
     "opKinds": [
-      "shift",
-      "reverse",
-      "rotate"
+      "trade"
     ]
   }
 }

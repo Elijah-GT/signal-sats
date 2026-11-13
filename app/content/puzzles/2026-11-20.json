@@ -7,7 +7,7 @@
     "height": 6,
     "source": {
       "side": "top",
-      "index": 2
+      "index": 1
     },
     "receiver": {
       "side": "bottom",
@@ -17,28 +17,32 @@
     "satellites": [
       {
         "id": "A",
-        "x": 2,
-        "y": 4,
+        "x": 3,
+        "y": 0,
         "op": {
-          "kind": "shift",
-          "amount": 2
+          "kind": "trade",
+          "a": 1,
+          "b": 4
         }
       },
       {
         "id": "B",
         "x": 4,
-        "y": 1,
+        "y": 4,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 3,
+          "b": 4
         }
       },
       {
         "id": "C",
-        "x": 2,
-        "y": 1,
+        "x": 3,
+        "y": 4,
         "op": {
-          "kind": "shift",
-          "amount": 2
+          "kind": "trade",
+          "a": 0,
+          "b": 2
         }
       },
       {
@@ -46,65 +50,65 @@
         "x": 1,
         "y": 0,
         "op": {
-          "kind": "shift",
-          "amount": 3
+          "kind": "trade",
+          "a": 1,
+          "b": 3
         }
       },
       {
         "id": "E",
-        "x": 4,
+        "x": 2,
         "y": 4,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 2,
+          "b": 4
         }
       },
       {
         "id": "F",
-        "x": 1,
-        "y": 1,
+        "x": 0,
+        "y": 0,
         "op": {
-          "kind": "rotate"
+          "kind": "trade",
+          "a": 1,
+          "b": 3
         }
       }
     ],
     "debris": [
       {
-        "x": 0,
-        "y": 4
-      },
-      {
-        "x": 0,
+        "x": 4,
         "y": 3
       }
     ]
   },
-  "ciphertext": "DPHEC",
+  "ciphertext": "GTLHI",
   "start": {
-    "A": "\\",
+    "A": "/",
     "B": "/",
-    "C": "\\",
+    "C": "/",
     "D": "\\",
     "E": "\\",
-    "F": "/"
+    "F": "\\"
   },
   "answer": "LIGHT",
   "solution": {
-    "A": "/",
+    "A": "\\",
     "B": "\\",
     "C": "\\",
-    "D": "/",
+    "D": "\\",
     "E": "/",
-    "F": "/"
+    "F": "\\"
   },
   "stats": {
     "satellites": 6,
     "pathLength": 4,
-    "reachingSettings": 22,
+    "reachingSettings": 24,
     "routes": 3,
     "minTaps": 3,
     "opKinds": [
-      "shift",
-      "rotate"
+      "trade"
     ]
   }
 }

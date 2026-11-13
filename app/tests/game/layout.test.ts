@@ -58,6 +58,16 @@ describe('beamPoints', () => {
     assert.ok((points.at(-1)?.y ?? 0) > top + 3 * cell);
   });
 
+  test('a received beam ends at the radar dish, above the ground', () => {
+    const points = beamPoints(board, traceBeam(board, {}));
+    assert.deepEqual(
+      points.at(-1),
+      portPoint(board, { side: 'bottom', index: 1 }, LAYOUT.dishFocus)
+    );
+    assert.ok(LAYOUT.dishFocus < LAYOUT.ground);
+    assert.ok(LAYOUT.ground < bottom);
+  });
+
   test('a beam lost in space ends just past the grid edge', () => {
     const withMirror: Board = {
       ...board,
